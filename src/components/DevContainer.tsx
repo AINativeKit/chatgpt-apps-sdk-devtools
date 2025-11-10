@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SetGlobalsEvent, type OpenAiGlobals, type Theme, Button, Chip } from '@ainativekit/ui';
+import type { DevContainerProps } from '../types';
 
 /**
  * DevContainer - Generic development environment simulator for ChatGPT widgets
@@ -21,52 +22,74 @@ import { SetGlobalsEvent, type OpenAiGlobals, type Theme, Button, Chip } from '@
  * - Never included in production builds
  */
 
-export interface DevContainerProps {
-  children: React.ReactNode;
+/**
+ * Error Boundary to catch and display widget errors gracefully
+ */
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
-  /**
-   * Delay in ms before setting toolOutput (simulates API call)
-   * Useful for testing loading/shimmer states
-   * @default 2000
-   */
-  loadingDelay?: number;
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
 
-  /**
-   * Initial theme for testing
-   * @default 'light'
-   */
-  theme?: Theme;
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('🚨 [@ainativekit/devtools] Widget crashed:', error, errorInfo);
+  }
 
-  /**
-   * Auto-load data on mount (like production)
-   * @default true
-   */
-  autoLoad?: boolean;
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          padding: '20px',
+          background: '#fee',
+          border: '1px solid #fcc',
+          borderRadius: '4px',
+          color: '#c00',
+          fontFamily: 'monospace',
+          fontSize: '14px'
+        }}>
+          <strong>⚠️ Widget Error</strong>
+          <p style={{ margin: '10px 0' }}>
+            The widget crashed. Check the console for details.
+          </p>
+          {this.state.error && (
+            <details style={{ marginTop: '10px' }}>
+              <summary style={{ cursor: 'pointer' }}>Error details</summary>
+              <pre style={{
+                marginTop: '10px',
+                padding: '10px',
+                background: '#fff',
+                overflow: 'auto'
+              }}>
+                {this.state.error.toString()}
+              </pre>
+            </details>
+          )}
+          <button
+            onClick={() => this.setState({ hasError: false, error: undefined })}
+            style={{
+              marginTop: '10px',
+              padding: '5px 10px',
+              background: '#fff',
+              border: '1px solid #ccc',
+              borderRadius: '3px',
+              cursor: 'pointer'
+            }}
+          >
+            Reset
+          </button>
+        </div>
+      );
+    }
 
-  /**
-   * Custom data loader function
-   * Return your widget-specific mock data here
-   */
-  dataLoader?: () => Promise<any> | any;
-
-  /**
-   * Custom empty data loader function
-   * Return your widget-specific empty state data
-   * If not provided, will return a generic empty object with type
-   */
-  emptyDataLoader?: () => Promise<any> | any;
-
-  /**
-   * Initial visibility of dev tools
-   * @default true
-   */
-  showDevTools?: boolean;
-
-  /**
-   * Toolbar position
-   * @default 'top'
-   */
-  toolbarPosition?: 'top' | 'bottom';
+    return this.props.children;
+  }
 }
 
 export function DevContainer({
@@ -607,7 +630,9 @@ export function DevContainer({
           position: 'relative',
           overflowX: 'hidden',
         }}>
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
 
           {/* Debug border overlay */}
           {debugMode === 'border' && (

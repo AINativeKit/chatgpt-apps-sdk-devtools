@@ -18,6 +18,16 @@ A powerful, zero-configuration development environment for building ChatGPT apps
 - 📦 **Production Ready** - Clean separation between dev tools and widget code
 - 🔌 **AINativeKit Integration** - Uses official AINativeKit hooks and events
 
+## 📋 Requirements
+
+- **React** 18.0.0 or higher
+- **@ainativekit/ui** 0.9.0 or higher (with ThemeProvider)
+- **Node.js** 18.0.0 or higher
+- **Modern browser** with ES2020+ support
+  - Chrome 80+, Firefox 75+, Safari 13.1+, Edge 80+
+
+The DevContainer expects your app to be wrapped with `ThemeProvider` from @ainativekit/ui, which provides the necessary CSS variables for theming.
+
 ## 📦 Installation
 
 ```bash
