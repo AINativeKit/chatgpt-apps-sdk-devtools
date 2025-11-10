@@ -10,7 +10,7 @@ import type { DevContainerProps } from '../types';
  *
  * This container simulates ChatGPT's production environment by:
  * 1. Mocking the window.openai API
- * 2. Using AINativeKit's official SetGlobalsEvent for state updates
+ * 2. Using ChatGPT Apps SDK's SetGlobalsEvent for state updates
  * 3. Providing interactive controls for testing different states
  * 4. Simulating different viewport widths (desktop/tablet/mobile)
  * 5. Applying debug overlays externally (clean separation)
@@ -119,7 +119,7 @@ export function DevContainer({
     document.documentElement.setAttribute('data-theme', mockTheme);
   }, [mockTheme]);
 
-  // Set globals helper using AINativeKit's official SetGlobalsEvent
+  // Set globals helper using ChatGPT Apps SDK's SetGlobalsEvent
   const setGlobals = (globals: Partial<OpenAiGlobals>) => {
     // Ensure window.openai exists before assigning
     if (!window.openai) {
@@ -129,7 +129,7 @@ export function DevContainer({
     // Update window.openai with new globals
     Object.assign(window.openai as any, globals);
 
-    // Dispatch AINativeKit's official SetGlobalsEvent for type safety
+    // Dispatch ChatGPT Apps SDK's SetGlobalsEvent for type safety
     const event = new SetGlobalsEvent({ globals });
     window.dispatchEvent(event);
   };

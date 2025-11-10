@@ -98,6 +98,6 @@ export const VIEWPORT_PRESETS = {
 } as const;
 
 /**
- * Re-export commonly used types from AINativeKit
+ * Re-export commonly used types from ChatGPT Apps SDK (@ainativekit/ui)
  */
 export type { Theme, OpenAiGlobals, DisplayMode, SetGlobalsEvent } from '@ainativekit/ui';

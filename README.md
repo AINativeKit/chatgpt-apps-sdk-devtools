@@ -1,6 +1,6 @@
 # @ainativekit/devtools
 
-> Development tools for ChatGPT Apps using AINativeKit
+> Development tools for building and testing ChatGPT Apps using ChatGPT Apps SDK
 
 [![npm version](https://img.shields.io/npm/v/@ainativekit/devtools.svg)](https://www.npmjs.com/package/@ainativekit/devtools)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -16,7 +16,7 @@ A powerful, zero-configuration development environment for building ChatGPT apps
 - 🐛 **Debug Overlays** - Visual boundary indicators for development
 - 🚀 **Zero Configuration** - Works out of the box with sensible defaults
 - 📦 **Production Ready** - Clean separation between dev tools and widget code
-- 🔌 **AINativeKit Integration** - Uses official AINativeKit hooks and events
+- 🔌 **ChatGPT Apps SDK Compatible** - Works with any ChatGPT Apps SDK implementation
 
 ## 📋 Requirements
 
@@ -245,4 +245,4 @@ MIT © Jake Lin
 
 ## 🙏 Acknowledgments
 
-Built with ❤️ for the ChatGPT app developer community. Special thanks to the AINativeKit team for providing the foundation for ChatGPT app development.
+Built with ❤️ for the ChatGPT app developer community. This tool helps developers build and test ChatGPT Apps using the ChatGPT Apps SDK, making development faster and more enjoyable.

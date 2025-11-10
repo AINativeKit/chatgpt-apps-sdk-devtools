@@ -1,6 +1,6 @@
 /**
  * @ainativekit/devtools
- * Development tools for ChatGPT Apps using AINativeKit
+ * Development tools for building and testing ChatGPT Apps using ChatGPT Apps SDK
  *
  * @packageDocumentation
  * A powerful, zero-configuration development environment for building ChatGPT apps.
@@ -52,7 +52,7 @@ export type {
    * Widget state for testing ('loading' | 'data' | 'empty' | 'error')
    */
   WidgetState,
-  // Re-exported from AINativeKit
+  // Re-exported from ChatGPT Apps SDK (@ainativekit/ui)
   Theme,
   OpenAiGlobals,
   DisplayMode,
