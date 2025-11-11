@@ -7,7 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0] - 2025-01-11
+## [0.3.0] - 2025-11-11
+
+### Major Improvements
+- **@ainativekit/ui is now optional** - DevTools works standalone without requiring @ainativekit/ui
+  - Includes minimal built-in theme support (~2KB CSS)
+  - Auto-detects and enhances when @ainativekit/ui is available
+  - Zero-configuration experience for both standalone and enhanced usage
+
+### Added
+- **Built-in theme CSS** - Minimal design system CSS variables bundled with DevTools
+  - Essential color variables (bg, text, icon, border, brand)
+  - Light and dark theme support via `data-theme` attribute
+  - Covers all DevTools UI components and common widget patterns
+- **Optional peer dependency support** - Uses `peerDependenciesMeta` to mark @ainativekit/ui as optional
+  - npm/yarn/pnpm won't warn if @ainativekit/ui is not installed
+  - Works with modern package managers (npm 7+, yarn 2+, pnpm 6+)
+
+### Changed
+- **@ainativekit/ui dependency** - Changed from required to optional peer dependency
+  - Still recommended for full design system integration
+  - DevTools provides basic theming without it
+  - No breaking changes for existing users
+
+### Documentation
+- Updated README with standalone and enhanced usage examples
+- Clarified @ainativekit/ui is optional but recommended
+- Added comparison between standalone and enhanced modes
+- Updated requirements section to reflect optional dependencies
+
+### Bundle Size
+- Standalone mode: ~2KB CSS overhead for theme support
+- Enhanced mode: Same as before when using @ainativekit/ui
+- No runtime performance impact
+
+## [0.2.0] - 2025-11-11
 
 ### Major Improvements
 - **Unified DevContainer** - Single component handles both single and multiple widgets elegantly
@@ -56,7 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive TypeScript documentation
 - Updated package description for broader ChatGPT Apps SDK scope
 
-## [0.1.0] - 2025-01-10
+## [0.1.0] - 2025-11-10
 
 ### Added
 - Initial release of @ainativekit/devtools
@@ -87,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Architecture principles
 - MIT License
 
-[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/releases/tag/v0.1.0

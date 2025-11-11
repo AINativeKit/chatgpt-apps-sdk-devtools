@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { SetGlobalsEvent, type OpenAiGlobals, type Theme } from '@ainativekit/ui';
 import type { DevContainerProps, Widget } from '../types';
+import '../styles/devtools-theme.css';
 
 /**
  * DevContainer - Development environment for ChatGPT Apps

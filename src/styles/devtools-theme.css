@@ -1,0 +1,110 @@
+/**
+ * Minimal AINativeKit Design System CSS Variables for DevTools
+ *
+ * This file provides essential theme variables for standalone usage
+ * when @ainativekit/ui is not installed. For full design system support,
+ * install @ainativekit/ui which includes comprehensive styling.
+ *
+ * @ainativekit/devtools - Development tools for ChatGPT Apps SDK
+ */
+
+:root {
+  /* Background Colors */
+  --ai-color-bg-primary: #ffffff;
+  --ai-color-bg-secondary: #e8e8e8;
+  --ai-color-bg-tertiary: #f3f3f3;
+
+  /* Text Colors */
+  --ai-color-text-primary: #0d0d0d;
+  --ai-color-text-secondary: #5d5d5d;
+  --ai-color-text-tertiary: #8f8f8f;
+
+  /* Icon Colors */
+  --ai-color-icon-primary: #0d0d0d;
+  --ai-color-icon-secondary: #5d5d5d;
+  --ai-color-icon-tertiary: #8f8f8f;
+
+  /* Border Colors */
+  --ai-color-border-light: rgba(13, 13, 13, 0.05);
+  --ai-color-border-default: rgba(13, 13, 13, 0.1);
+  --ai-color-border-heavy: rgba(13, 13, 13, 0.15);
+  --ai-color-border-primary: rgba(13, 13, 13, 0.1);
+
+  /* Brand Colors */
+  --ai-color-brand-primary: #0285ff;
+  --ai-color-brand-primary-hover: color-mix(in srgb, #0285ff 85%, black);
+  --ai-color-brand-primary-active: color-mix(in srgb, #0285ff 75%, black);
+  --ai-color-brand-on-primary: #ffffff;
+
+  /* Accent Colors */
+  --ai-color-accent-blue: #0285ff;
+  --ai-color-accent-red: #e02e2a;
+  --ai-color-accent-orange: #e25507;
+  --ai-color-accent-green: #008635;
+
+  /* State Colors */
+  --ai-state-hover-background: rgba(13, 13, 13, 0.08);
+  --ai-state-hover-opacity: 0.9;
+  --ai-state-focus-outline: #0285ff;
+
+  /* Typography */
+  --ai-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ai-font-weight-normal: 400;
+  --ai-font-weight-medium: 500;
+  --ai-font-weight-semibold: 600;
+  --ai-font-size-caption: 12px;
+  --ai-line-height-caption: 16px;
+
+  /* Spacing */
+  --ai-spacing-2: 4px;
+  --ai-spacing-4: 8px;
+  --ai-spacing-6: 12px;
+  --ai-spacing-8: 16px;
+  --ai-spacing-12: 24px;
+
+  /* Border Radius */
+  --ai-radius-sm: 4px;
+  --ai-radius-md: 8px;
+  --ai-radius-base: 12px;
+  --ai-radius-full: 9999px;
+}
+
+/**
+ * Dark Theme Overrides
+ * Applied when data-theme="dark" attribute is set on document root
+ */
+[data-theme="dark"] {
+  /* Background Colors */
+  --ai-color-bg-primary: #212121;
+  --ai-color-bg-secondary: #303030;
+  --ai-color-bg-tertiary: #414141;
+
+  /* Text Colors */
+  --ai-color-text-primary: #ffffff;
+  --ai-color-text-secondary: #cdcdcd;
+  --ai-color-text-tertiary: #afafaf;
+
+  /* Icon Colors */
+  --ai-color-icon-primary: #ffffff;
+  --ai-color-icon-secondary: #cdcdcd;
+  --ai-color-icon-tertiary: #afafaf;
+
+  /* Border Colors */
+  --ai-color-border-light: rgba(255, 255, 255, 0.08);
+  --ai-color-border-default: rgba(255, 255, 255, 0.12);
+  --ai-color-border-heavy: rgba(255, 255, 255, 0.16);
+  --ai-color-border-primary: rgba(255, 255, 255, 0.12);
+
+  /* Brand Colors - Dark Mode Adjustments */
+  --ai-color-brand-primary: #0285ff;
+  --ai-color-brand-primary-hover: color-mix(in srgb, #0285ff 85%, white);
+  --ai-color-brand-primary-active: color-mix(in srgb, #0285ff 90%, white);
+
+  /* Accent Colors - Dark Mode */
+  --ai-color-accent-red: #ff8583;
+  --ai-color-accent-orange: #ff9e6c;
+  --ai-color-accent-green: #40c977;
+
+  /* State Colors */
+  --ai-state-hover-background: rgba(255, 255, 255, 0.08);
+}

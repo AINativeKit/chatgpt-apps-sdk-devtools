@@ -187,7 +187,7 @@ Maintainers will handle releases following semantic versioning:
 
 ## 📚 Resources
 
-- [AINativeKit Documentation](https://npmjs.com/package/@ainativekit/ui)
+- [AINativeKit UI](https://github.com/AINativeKit/chatgpt-apps-sdk-ui)
 - [ChatGPT Apps Documentation](https://platform.openai.com/docs/chatgpt)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
 - [React Documentation](https://react.dev/)

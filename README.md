@@ -21,12 +21,16 @@ A powerful, zero-configuration development environment for building ChatGPT apps
 ## 📋 Requirements
 
 - **React** 18.0.0 or higher
-- **@ainativekit/ui** 0.9.0 or higher (with ThemeProvider)
 - **Node.js** 18.0.0 or higher
 - **Modern browser** with ES2020+ support
   - Chrome 80+, Firefox 75+, Safari 13.1+, Edge 80+
 
-The DevContainer expects your app to be wrapped with `ThemeProvider` from @ainativekit/ui, which provides the necessary CSS variables for theming.
+### Optional Dependencies
+
+- **@ainativekit/ui** 0.10.0 or higher (optional, but recommended for enhanced theming)
+  - DevTools includes basic theme support out of the box
+  - For full design system integration, install `@ainativekit/ui` and use `ThemeProvider`
+  - See usage examples below for both standalone and integrated approaches
 
 ## 📦 Installation
 
@@ -42,14 +46,37 @@ yarn add -D @ainativekit/devtools
 
 ## 🚀 Quick Start
 
-### Basic Usage
+### Standalone Usage (No Dependencies)
+
+DevTools works out of the box with built-in theme support:
+
+```typescript
+import { DevContainer } from '@ainativekit/devtools';
+import App from './App';
+
+// Only use DevContainer in development
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+root.render(
+  import.meta.env.DEV ? (
+    <DevContainer>
+      <App />
+    </DevContainer>
+  ) : (
+    <App />
+  )
+);
+```
+
+### Enhanced Usage (with @ainativekit/ui)
+
+For full design system integration and advanced theming:
 
 ```typescript
 import { DevContainer } from '@ainativekit/devtools';
 import { ThemeProvider } from '@ainativekit/ui';
 import App from './App';
 
-// Only use DevContainer in development
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
@@ -87,7 +114,6 @@ DevContainer automatically detects when you have multiple widgets and shows a se
 
 ```typescript
 import { DevContainer, createMockData } from '@ainativekit/devtools';
-import { ThemeProvider } from '@ainativekit/ui';
 import CarouselWidget from './widgets/CarouselWidget';
 import MapWidget from './widgets/MapWidget';
 import SearchWidget from './widgets/SearchWidget';
@@ -106,28 +132,28 @@ const restaurantData = createMockData(
 
 function App() {
   return (
-    <ThemeProvider>
-      <DevContainer
-        widgets={[
-          { id: 'carousel', name: 'Restaurant Carousel', component: CarouselWidget },
-          { id: 'map', name: 'Location Map', component: MapWidget },
-          { id: 'search', name: 'Search Results', component: SearchWidget }
-        ]}
-        dataLoaders={{
-          restaurants: () => restaurantData.full,
-          locations: () => ({ lat: 40.7128, lng: -74.0060 })
-        }}
-        emptyDataLoaders={{
-          restaurants: () => restaurantData.empty
-        }}
-        defaultWidget="carousel"
-        loadingDelay={2000}
-        theme="light"
-      />
-    </ThemeProvider>
+    <DevContainer
+      widgets={[
+        { id: 'carousel', name: 'Restaurant Carousel', component: CarouselWidget },
+        { id: 'map', name: 'Location Map', component: MapWidget },
+        { id: 'search', name: 'Search Results', component: SearchWidget }
+      ]}
+      dataLoaders={{
+        restaurants: () => restaurantData.full,
+        locations: () => ({ lat: 40.7128, lng: -74.0060 })
+      }}
+      emptyDataLoaders={{
+        restaurants: () => restaurantData.empty
+      }}
+      defaultWidget="carousel"
+      loadingDelay={2000}
+      theme="light"
+    />
   );
 }
 ```
+
+> **Note:** Wrap with `<ThemeProvider>` from `@ainativekit/ui` for enhanced theming support.
 
 **Features:**
 - Single dev server for all widgets
@@ -321,7 +347,7 @@ MIT © Jake Lin
 
 - [GitHub Repository](https://github.com/AINativeKit/chatgpt-apps-sdk-devtools)
 - [NPM Package](https://www.npmjs.com/package/@ainativekit/devtools)
-- [AINativeKit](https://www.npmjs.com/package/@ainativekit/ui)
+- [AINativeKit - ChatGPT Apps SDK UI](https://github.com/AINativeKit/chatgpt-apps-sdk-ui)
 - [ChatGPT Apps Documentation](https://platform.openai.com/docs/chatgpt)
 
 ## 🙏 Acknowledgments

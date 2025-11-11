@@ -9,6 +9,7 @@ export default defineConfig({
   clean: true,
   external: ['react', 'react-dom', '@ainativekit/ui'],
   treeshake: true,
+  injectStyle: true, // Inject CSS into the bundle
   esbuildOptions(options) {
     options.jsx = 'automatic';
   }
