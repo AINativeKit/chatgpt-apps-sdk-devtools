@@ -470,13 +470,15 @@ export function DevContainer({
                     fontWeight: '500',
                     cursor: 'pointer',
                     minWidth: '140px',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
                     appearance: 'none',
                     backgroundImage: mockTheme === 'dark'
-                      ? 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23aaa\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")'
-                      : 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                      ? `linear-gradient(45deg, transparent 50%, #aaa 50%), linear-gradient(135deg, #aaa 50%, transparent 50%), linear-gradient(to bottom, #2a2a2a, #2a2a2a)`
+                      : `linear-gradient(45deg, transparent 50%, #666 50%), linear-gradient(135deg, #666 50%, transparent 50%), linear-gradient(to bottom, white, white)`,
+                    backgroundPosition: 'calc(100% - 15px) center, calc(100% - 10px) center, 0 0',
+                    backgroundSize: '5px 5px, 5px 5px, 100% 100%',
                     backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'right 10px center',
-                    backgroundSize: '8px 6px',
                     transition: 'border-color 0.15s, box-shadow 0.15s',
                     outline: 'none',
                   }}
@@ -515,13 +517,15 @@ export function DevContainer({
                   fontWeight: '500',
                   cursor: 'pointer',
                   minWidth: '110px',
+                  WebkitAppearance: 'none',
+                  MozAppearance: 'none',
                   appearance: 'none',
                   backgroundImage: mockTheme === 'dark'
-                    ? 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23aaa\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")'
-                    : 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                    ? `linear-gradient(45deg, transparent 50%, #aaa 50%), linear-gradient(135deg, #aaa 50%, transparent 50%), linear-gradient(to bottom, #2a2a2a, #2a2a2a)`
+                    : `linear-gradient(45deg, transparent 50%, #666 50%), linear-gradient(135deg, #666 50%, transparent 50%), linear-gradient(to bottom, white, white)`,
+                  backgroundPosition: 'calc(100% - 15px) center, calc(100% - 10px) center, 0 0',
+                  backgroundSize: '5px 5px, 5px 5px, 100% 100%',
                   backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 10px center',
-                  backgroundSize: '8px 6px',
                   transition: 'border-color 0.15s, box-shadow 0.15s',
                   outline: 'none',
                 }}
@@ -816,13 +820,15 @@ export function DevContainer({
                     fontSize: '12px',
                     fontWeight: '500',
                     cursor: 'pointer',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
                     appearance: 'none',
                     backgroundImage: mockTheme === 'dark'
-                      ? 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23aaa\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")'
-                      : 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                      ? `linear-gradient(45deg, transparent 50%, #aaa 50%), linear-gradient(135deg, #aaa 50%, transparent 50%), linear-gradient(to bottom, #2a2a2a, #2a2a2a)`
+                      : `linear-gradient(45deg, transparent 50%, #666 50%), linear-gradient(135deg, #666 50%, transparent 50%), linear-gradient(to bottom, white, white)`,
+                    backgroundPosition: 'calc(100% - 13px) center, calc(100% - 8px) center, 0 0',
+                    backgroundSize: '5px 5px, 5px 5px, 100% 100%',
                     backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'right 6px center',
-                    backgroundSize: '8px 6px',
                     transition: 'border-color 0.15s',
                     outline: 'none',
                   }}
