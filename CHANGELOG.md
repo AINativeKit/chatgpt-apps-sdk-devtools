@@ -7,16 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-01-11
+
 ### Added
-- Empty state support with `emptyDataLoader` prop
-- Comprehensive TypeScript documentation
-- CONTRIBUTING.md guide for contributors
-- Additional examples in README
+- **MultiWidgetRouter component** - Manage multiple widgets in a single dev server with an elegant dropdown selector
+  - URL parameter support (`?widget=carousel`) for direct linking
+  - localStorage persistence of selected widget
+  - Browser back/forward navigation support
+  - Shared DevContainer configuration across all widgets
+  - Centralized data loader management
+- **createMockData utility** - Type-safe mock data management with automatic empty state generation
+  - Full TypeScript generics support
+  - Three ways to define empty states (explicit, transform, auto-generated)
+  - Works with any data structure
+- **Empty state support** - New empty state testing in DevContainer
+  - `emptyDataLoader` prop for custom empty state data
+  - "Empty" button in toolbar for quick state switching
+  - Complete coverage of all common widget states
+- **widgetSelector prop** - Custom widget selector integration in DevContainer toolbar
+  - Enables seamless MultiWidgetRouter integration
+  - Maintains clean separation of concerns
+- **Enhanced theme support** - Better full-page theming
+  - Body background syncs with theme using CSS variables
+  - Improved computed style detection
+- **Error Boundary** - Graceful error handling for widget crashes
+  - Shows friendly error message with details
+  - Reset button to recover from errors
+  - Prevents entire dev environment from crashing
 
 ### Fixed
 - DevContainer padding adjustments for Advanced section
 - Theme-aware background colors using CSS variables
 - Dev Tools visibility (always visible, removed close button)
+- Type duplication in DevContainer (now imports from types/index.ts)
+
+### Documentation
+- Comprehensive TypeScript documentation for all new components
+- JSDoc comments with examples for all exports
+- Inline documentation for complex logic
+- Updated package description for broader ChatGPT Apps SDK scope
 
 ## [0.1.0] - 2025-01-10
 
@@ -49,5 +78,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Architecture principles
 - MIT License
 
-[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/releases/tag/v0.1.0

@@ -81,6 +81,65 @@ root.render(
 </DevContainer>
 ```
 
+### Multi-Widget Development (v0.2.0+)
+
+Use `MultiWidgetRouter` to manage multiple widgets in a single dev server:
+
+```typescript
+import { MultiWidgetRouter, createMockData } from '@ainativekit/devtools';
+import { ThemeProvider } from '@ainativekit/ui';
+import CarouselApp from './widgets/carousel/App';
+import MapApp from './widgets/map/App';
+import SearchApp from './widgets/search/App';
+
+// Create mock data with automatic empty states
+const restaurantData = createMockData(
+  { restaurants: [...], totalResults: 9 },
+  {
+    emptyTransform: (data) => ({
+      ...data,
+      restaurants: [],
+      totalResults: 0
+    })
+  }
+);
+
+function DevEntry() {
+  return (
+    <ThemeProvider>
+      <MultiWidgetRouter
+        widgets={[
+          { id: 'carousel', name: 'Restaurant Carousel', component: CarouselApp },
+          { id: 'map', name: 'Location Map', component: MapApp },
+          { id: 'search', name: 'Search Results', component: SearchApp }
+        ]}
+        sharedConfig={{
+          loadingDelay: 2000,
+          theme: 'light',
+          autoLoad: true
+        }}
+        dataLoaders={{
+          restaurants: () => restaurantData.full,
+          locations: () => ({ lat: 40.7128, lng: -74.0060 })
+        }}
+        emptyDataLoaders={{
+          restaurants: () => restaurantData.empty
+        }}
+        defaultDataLoader="restaurants"
+        defaultWidget="carousel"
+      />
+    </ThemeProvider>
+  );
+}
+```
+
+**Benefits:**
+- Single dev server for all widgets
+- Instant switching via dropdown selector
+- URL support (`?widget=map`)
+- Shared configuration across widgets
+- Persistent widget selection
+
 ## 📖 API Reference
 
 ### DevContainer Props
@@ -95,6 +154,31 @@ root.render(
 | `emptyDataLoader` | `() => Promise<any> \| any` | - | Custom empty state data loader |
 | `showDevTools` | `boolean` | `true` | Show/hide dev toolbar |
 | `toolbarPosition` | `'top' \| 'bottom'` | `'top'` | Toolbar position |
+| `widgetSelector` | `React.ReactNode` | - | Custom widget selector UI for toolbar |
+
+### MultiWidgetRouter Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `widgets` | `Widget[]` | - | Array of widget configurations |
+| `sharedConfig` | `DevContainerProps` | `{}` | Shared DevContainer settings |
+| `dataLoaders` | `Record<string, Function>` | `{}` | Map of data loader functions |
+| `emptyDataLoaders` | `Record<string, Function>` | `{}` | Map of empty data loader functions |
+| `defaultDataLoader` | `string` | - | Key for default data loader |
+| `defaultWidget` | `string` | - | ID of default widget to show |
+
+### createMockData
+
+```typescript
+createMockData<T>(fullData: T, config?: MockDataConfig<T>): MockData<T>
+```
+
+Creates type-safe mock data with automatic empty state generation.
+
+**Config Options:**
+- `emptyData`: Explicit empty state data
+- `emptyTransform`: Function to derive empty state from full data
+- If neither provided, generates empty object automatically
 
 ### Mock OpenAI API
 

@@ -101,6 +101,7 @@ export function DevContainer({
   emptyDataLoader,
   showDevTools: _initialShowDevTools = true, // Kept for backward compatibility but always true
   toolbarPosition = 'top',
+  widgetSelector,
 }: DevContainerProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [widgetState, setWidgetState] = useState<'loading' | 'data' | 'error' | 'empty'>('loading');
@@ -117,6 +118,14 @@ export function DevContainer({
   // Sync theme to document root for page-level theming
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', mockTheme);
+    // Set body background to match theme using AINativeKit token
+    // Get computed value after theme attribute is set
+    const bgColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--ai-color-bg-primary')
+      .trim();
+    if (bgColor) {
+      document.body.style.backgroundColor = bgColor;
+    }
   }, [mockTheme]);
 
   // Set globals helper using ChatGPT Apps SDK's SetGlobalsEvent
@@ -401,6 +410,19 @@ export function DevContainer({
           <span>🛠️</span>
           <span>Dev Tools</span>
         </div>
+
+        {/* Widget Selector (if provided) */}
+        {widgetSelector && (
+          <>
+            {/* Separator */}
+            <div style={{
+              height: '20px',
+              width: '1px',
+              backgroundColor: 'var(--ai-color-border-heavy)',
+            }} />
+            {widgetSelector}
+          </>
+        )}
 
         {showDevTools && (
           <>

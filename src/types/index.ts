@@ -71,6 +71,21 @@ export interface DevContainerProps {
    * @default 'top'
    */
   toolbarPosition?: 'top' | 'bottom';
+
+  /**
+   * Custom widget selector component (for multi-widget development)
+   * When provided, displays in the toolbar to allow switching between widgets
+   * @example
+   * ```tsx
+   * widgetSelector: (
+   *   <select onChange={handleChange}>
+   *     <option value="0">Carousel</option>
+   *     <option value="1">Map</option>
+   *   </select>
+   * )
+   * ```
+   */
+  widgetSelector?: React.ReactNode;
 }
 
 /**
@@ -86,7 +101,7 @@ export type DebugMode = 'none' | 'border';
 /**
  * Widget state for testing
  */
-export type WidgetState = 'loading' | 'data' | 'error';
+export type WidgetState = 'loading' | 'data' | 'empty' | 'error';
 
 /**
  * Viewport presets for device simulation

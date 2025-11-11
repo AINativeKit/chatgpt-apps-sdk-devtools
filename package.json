@@ -1,6 +1,6 @@
 {
   "name": "@ainativekit/devtools",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Development tools for building and testing ChatGPT Apps using ChatGPT Apps SDK",
   "author": "Jake Lin",
   "license": "MIT",

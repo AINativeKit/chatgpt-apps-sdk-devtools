@@ -34,6 +34,36 @@
  */
 export { DevContainer } from './components/DevContainer';
 
+/**
+ * Multi-widget development router for managing multiple widgets in a single dev server
+ * Enables quick navigation between widgets without managing multiple ports
+ * @see {@link MultiWidgetRouterProps} for configuration options
+ * @example
+ * ```tsx
+ * import { MultiWidgetRouter } from '@ainativekit/devtools';
+ * import { ThemeProvider } from '@ainativekit/ui';
+ * import CarouselApp from './widget-carousel/App';
+ * import MapApp from './widget-map/App';
+ *
+ * function DevEntry() {
+ *   return (
+ *     <ThemeProvider>
+ *       <MultiWidgetRouter
+ *         widgets={[
+ *           { id: 'carousel', name: 'Carousel', component: CarouselApp },
+ *           { id: 'map', name: 'Map', component: MapApp }
+ *         ]}
+ *         sharedConfig={{ loadingDelay: 2000, theme: 'light' }}
+ *         dataLoaders={{ restaurants: () => mockData }}
+ *         defaultDataLoader="restaurants"
+ *       />
+ *     </ThemeProvider>
+ *   );
+ * }
+ * ```
+ */
+export { MultiWidgetRouter } from './components/MultiWidgetRouter';
+
 // Type exports
 export type {
   /**
@@ -60,6 +90,44 @@ export type {
 } from './types';
 
 /**
+ * MultiWidgetRouter-specific types
+ */
+export type {
+  /**
+   * Widget configuration for MultiWidgetRouter
+   */
+  Widget,
+  /**
+   * Configuration props for MultiWidgetRouter component
+   */
+  MultiWidgetRouterProps,
+} from './components/MultiWidgetRouter';
+
+/**
+ * Utility functions for mock data management
+ *
+ * Provides helpers to create and manage mock data states for development and testing.
+ * Works with any data structure and is fully type-safe.
+ *
+ * @example
+ * ```typescript
+ * import { createMockData } from '@ainativekit/devtools';
+ *
+ * const mockRestaurants = createMockData(fullData, {
+ *   emptyTransform: (data) => ({ ...data, restaurants: [], totalResults: 0 })
+ * });
+ *
+ * // Use in MultiWidgetRouter
+ * <MultiWidgetRouter
+ *   dataLoaders={{ restaurants: () => mockRestaurants.full }}
+ *   emptyDataLoaders={{ restaurants: () => mockRestaurants.empty }}
+ * />
+ * ```
+ */
+export { createMockData } from './utils/createMockData';
+export type { MockData, MockDataConfig } from './utils/createMockData';
+
+/**
  * Viewport width presets for device simulation
  * @constant
  * @property {number} desktop - 768px width
@@ -72,4 +140,4 @@ export { VIEWPORT_PRESETS } from './types';
  * Current version of @ainativekit/devtools
  * @constant
  */
-export const VERSION = '0.1.0';
+export const VERSION = '0.2.0';
