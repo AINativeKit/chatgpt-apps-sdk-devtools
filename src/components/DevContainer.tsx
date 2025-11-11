@@ -319,9 +319,24 @@ export function DevContainer({
 
     await new Promise(resolve => setTimeout(resolve, loadingDelay));
 
-    if (isLoading) {
-      await handleInstantData();
+    // Load the data after delay
+    try {
+      const loader = normalizedDataLoaders[activeDataLoader];
+      if (!loader) {
+        console.warn('⚠️ No data loader found for key:', activeDataLoader);
+        setGlobals({ toolOutput: {} });
+      } else {
+        const data = await loader();
+        setGlobals({ toolOutput: data });
+        console.log('✅ Data loaded:', data);
+      }
+      setWidgetState('data');
+    } catch (error) {
+      console.error('❌ Error loading data:', error);
+      setWidgetState('error');
+      setGlobals({ toolOutput: { error: error instanceof Error ? error.message : 'Unknown error' } });
     }
+
     setIsLoading(false);
   };
 
