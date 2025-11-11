@@ -399,18 +399,28 @@ export function DevContainer({
           [toolbarPosition]: 0,
           left: 0,
           right: 0,
-          background: 'linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(250,250,250,0.98))',
+          background: mockTheme === 'dark'
+            ? 'linear-gradient(to bottom, rgba(30,30,30,0.98), rgba(20,20,20,0.98))'
+            : 'linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(250,250,250,0.98))',
           backdropFilter: 'blur(10px)',
-          borderBottom: toolbarPosition === 'top' ? '1px solid rgba(0,0,0,0.08)' : 'none',
-          borderTop: toolbarPosition === 'bottom' ? '1px solid rgba(0,0,0,0.08)' : 'none',
+          borderBottom: toolbarPosition === 'top'
+            ? mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)'
+            : 'none',
+          borderTop: toolbarPosition === 'bottom'
+            ? mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)'
+            : 'none',
           padding: '12px 16px',
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
           gap: '10px',
           boxShadow: toolbarPosition === 'top'
-            ? '0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.08)'
-            : '0 -4px 12px rgba(0,0,0,0.05), 0 -1px 3px rgba(0,0,0,0.08)',
+            ? mockTheme === 'dark'
+              ? '0 4px 12px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.4)'
+              : '0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.08)'
+            : mockTheme === 'dark'
+              ? '0 -4px 12px rgba(0,0,0,0.3), 0 -1px 3px rgba(0,0,0,0.4)'
+              : '0 -4px 12px rgba(0,0,0,0.05), 0 -1px 3px rgba(0,0,0,0.08)',
         }}>
           {/* Main Controls */}
           <div style={{
@@ -425,14 +435,14 @@ export function DevContainer({
               alignItems: 'center',
               gap: '6px',
               paddingRight: '12px',
-              borderRight: '1px solid rgba(0,0,0,0.1)',
+              borderRight: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
               marginRight: '4px',
             }}>
               <span style={{ fontSize: '16px' }}>⚡</span>
               <span style={{
                 fontWeight: '600',
                 fontSize: '13px',
-                color: '#333',
+                color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
                 letterSpacing: '-0.01em',
               }}>
                 Dev Tools
@@ -453,14 +463,17 @@ export function DevContainer({
                     padding: '5px 10px',
                     paddingRight: '28px',
                     borderRadius: '6px',
-                    border: '1px solid rgba(0,0,0,0.12)',
-                    background: 'white',
+                    border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
+                    background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
+                    color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
                     fontSize: '13px',
                     fontWeight: '500',
                     cursor: 'pointer',
                     minWidth: '140px',
                     appearance: 'none',
-                    backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                    backgroundImage: mockTheme === 'dark'
+                      ? 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23aaa\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")'
+                      : 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'right 10px center',
                     transition: 'border-color 0.15s, box-shadow 0.15s',
@@ -471,7 +484,7 @@ export function DevContainer({
                     e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(0,0,0,0.12)';
+                    e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
                     e.target.style.boxShadow = 'none';
                   }}
                 >
@@ -494,14 +507,17 @@ export function DevContainer({
                   padding: '5px 10px',
                   paddingRight: '28px',
                   borderRadius: '6px',
-                  border: '1px solid rgba(0,0,0,0.12)',
-                  background: 'white',
+                  border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
+                  background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
+                  color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
                   fontSize: '13px',
                   fontWeight: '500',
                   cursor: 'pointer',
                   minWidth: '110px',
                   appearance: 'none',
-                  backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                  backgroundImage: mockTheme === 'dark'
+                    ? 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23aaa\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")'
+                    : 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
                   backgroundRepeat: 'no-repeat',
                   backgroundPosition: 'right 10px center',
                   transition: 'border-color 0.15s, box-shadow 0.15s',
@@ -512,7 +528,7 @@ export function DevContainer({
                   e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)';
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(0,0,0,0.12)';
+                  e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
                   e.target.style.boxShadow = 'none';
                 }}
               >
@@ -528,7 +544,7 @@ export function DevContainer({
             <div style={{
               width: '1px',
               height: '20px',
-              background: 'rgba(0,0,0,0.1)',
+              background: mockTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
               margin: '0 4px',
             }} />
 
@@ -536,7 +552,7 @@ export function DevContainer({
             <div style={{
               display: 'flex',
               gap: '4px',
-              background: 'rgba(0,0,0,0.03)',
+              background: mockTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
               padding: '3px',
               borderRadius: '8px',
             }}>
@@ -548,7 +564,7 @@ export function DevContainer({
                   borderRadius: '5px',
                   border: 'none',
                   background: widgetState === 'loading' ? '#3b82f6' : 'transparent',
-                  color: widgetState === 'loading' ? 'white' : '#555',
+                  color: widgetState === 'loading' ? 'white' : (mockTheme === 'dark' ? '#aaa' : '#555'),
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: widgetState === 'loading' && !isLoading ? 'default' : 'pointer',
@@ -564,7 +580,7 @@ export function DevContainer({
                 onMouseLeave={(e) => {
                   if (widgetState !== 'loading') {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#555';
+                    e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
                   }
                 }}
               >
@@ -578,7 +594,7 @@ export function DevContainer({
                   borderRadius: '5px',
                   border: 'none',
                   background: widgetState === 'data' && !isLoading ? '#10b981' : 'transparent',
-                  color: widgetState === 'data' && !isLoading ? 'white' : '#555',
+                  color: widgetState === 'data' && !isLoading ? 'white' : (mockTheme === 'dark' ? '#aaa' : '#555'),
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: isLoading ? 'default' : 'pointer',
@@ -594,7 +610,7 @@ export function DevContainer({
                 onMouseLeave={(e) => {
                   if (widgetState !== 'data' || isLoading) {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#555';
+                    e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
                   }
                 }}
               >
@@ -608,7 +624,7 @@ export function DevContainer({
                   borderRadius: '5px',
                   border: 'none',
                   background: 'transparent',
-                  color: '#555',
+                  color: mockTheme === 'dark' ? '#aaa' : '#555',
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: isLoading ? 'default' : 'pointer',
@@ -623,7 +639,7 @@ export function DevContainer({
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#555';
+                  e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
                 }}
               >
                 ⏱️ Delayed
@@ -652,7 +668,7 @@ export function DevContainer({
                 onMouseLeave={(e) => {
                   if (widgetState !== 'empty') {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#555';
+                    e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
                   }
                 }}
               >
@@ -682,7 +698,7 @@ export function DevContainer({
                 onMouseLeave={(e) => {
                   if (widgetState !== 'error') {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#555';
+                    e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
                   }
                 }}
               >
@@ -694,7 +710,7 @@ export function DevContainer({
             <div style={{
               width: '1px',
               height: '20px',
-              background: 'rgba(0,0,0,0.1)',
+              background: mockTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
               margin: '0 4px',
             }} />
 
@@ -705,8 +721,8 @@ export function DevContainer({
               style={{
                 padding: '6px 10px',
                 borderRadius: '6px',
-                border: '1px solid rgba(0,0,0,0.12)',
-                background: 'white',
+                border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
+                background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
                 fontSize: '14px',
                 cursor: 'pointer',
                 transition: 'all 0.15s',
@@ -715,12 +731,12 @@ export function DevContainer({
                 gap: '4px',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0,0,0,0.05)';
-                e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)';
+                e.currentTarget.style.background = mockTheme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)';
+                e.currentTarget.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'white';
-                e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)';
+                e.currentTarget.style.background = mockTheme === 'dark' ? '#2a2a2a' : 'white';
+                e.currentTarget.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
               }}
             >
               {mockTheme === 'light' ? '🌙' : '☀️'}
@@ -737,7 +753,7 @@ export function DevContainer({
                 borderRadius: '6px',
                 border: 'none',
                 background: showAdvancedSettings ? 'rgba(59,130,246,0.1)' : 'transparent',
-                color: showAdvancedSettings ? '#3b82f6' : '#666',
+                color: showAdvancedSettings ? '#3b82f6' : (mockTheme === 'dark' ? '#aaa' : '#666'),
                 fontSize: '12px',
                 fontWeight: '500',
                 cursor: 'pointer',
@@ -753,7 +769,7 @@ export function DevContainer({
               onMouseLeave={(e) => {
                 if (!showAdvancedSettings) {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#666';
+                  e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#666';
                 }
               }}
             >
@@ -776,7 +792,7 @@ export function DevContainer({
               gap: '12px',
               flexWrap: 'wrap',
               paddingTop: '8px',
-              borderTop: '1px solid rgba(0,0,0,0.06)',
+              borderTop: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
             }}>
               {/* Device Type */}
               <div style={{
@@ -784,7 +800,7 @@ export function DevContainer({
                 alignItems: 'center',
                 gap: '6px',
               }}>
-                <span style={{ fontSize: '12px', color: '#666', fontWeight: '500' }}>Device:</span>
+                <span style={{ fontSize: '12px', color: mockTheme === 'dark' ? '#aaa' : '#666', fontWeight: '500' }}>Device:</span>
                 <select
                   value={deviceType}
                   onChange={(e) => setDeviceType(e.target.value as 'desktop' | 'tablet' | 'mobile')}
@@ -792,13 +808,16 @@ export function DevContainer({
                     padding: '4px 8px',
                     paddingRight: '24px',
                     borderRadius: '6px',
-                    border: '1px solid rgba(0,0,0,0.12)',
-                    background: 'white',
+                    border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
+                    background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
+                    color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
                     fontSize: '12px',
                     fontWeight: '500',
                     cursor: 'pointer',
                     appearance: 'none',
-                    backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                    backgroundImage: mockTheme === 'dark'
+                      ? 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23aaa\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")'
+                      : 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'right 6px center',
                     transition: 'border-color 0.15s',
@@ -808,7 +827,7 @@ export function DevContainer({
                     e.target.style.borderColor = '#3b82f6';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(0,0,0,0.12)';
+                    e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
                   }}
                 >
                   <option value="desktop">💻 Desktop (768px)</option>
@@ -825,9 +844,9 @@ export function DevContainer({
                   padding: '4px 10px',
                   borderRadius: '6px',
                   border: '1px solid',
-                  borderColor: debugMode === 'border' ? '#ef4444' : 'rgba(0,0,0,0.12)',
-                  background: debugMode === 'border' ? 'rgba(239,68,68,0.1)' : 'white',
-                  color: debugMode === 'border' ? '#ef4444' : '#666',
+                  borderColor: debugMode === 'border' ? '#ef4444' : (mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'),
+                  background: debugMode === 'border' ? 'rgba(239,68,68,0.1)' : (mockTheme === 'dark' ? '#2a2a2a' : 'white'),
+                  color: debugMode === 'border' ? '#ef4444' : (mockTheme === 'dark' ? '#aaa' : '#666'),
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: 'pointer',
@@ -841,8 +860,8 @@ export function DevContainer({
                 }}
                 onMouseLeave={(e) => {
                   if (debugMode !== 'border') {
-                    e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)';
-                    e.currentTarget.style.background = 'white';
+                    e.currentTarget.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
+                    e.currentTarget.style.background = mockTheme === 'dark' ? '#2a2a2a' : 'white';
                   }
                 }}
               >
@@ -872,19 +891,19 @@ export function DevContainer({
                 <span style={{
                   padding: '3px 10px',
                   borderRadius: '12px',
-                  background: mockTheme === 'dark' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.5)',
-                  color: '#666',
+                  background: mockTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)',
+                  color: mockTheme === 'dark' ? '#aaa' : '#666',
                   fontSize: '11px',
                   fontWeight: '600',
-                  border: '1px solid rgba(0,0,0,0.08)',
+                  border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)',
                 }}>
                   {mockTheme === 'dark' ? '🌙' : '☀️'} {mockTheme.toUpperCase()}
                 </span>
                 <span style={{
                   padding: '3px 10px',
                   borderRadius: '12px',
-                  background: 'rgba(0,0,0,0.05)',
-                  color: '#666',
+                  background: mockTheme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                  color: mockTheme === 'dark' ? '#aaa' : '#666',
                   fontSize: '11px',
                   fontWeight: '600',
                 }}>
