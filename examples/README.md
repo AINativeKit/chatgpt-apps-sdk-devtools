@@ -15,17 +15,16 @@ import { DevContainer } from '@ainativekit/devtools';
 </DevContainer>
 ```
 
-### 2. Multi-Widget Example (`/multi-widget`) (v0.2.0+)
-Demonstrates the MultiWidgetRouter for managing multiple widgets in a single dev server.
+### 2. Widgets Example (`/widgets`) (v0.2.0+)
+Demonstrates multi-widget development in a single dev server.
 
 ```tsx
-<MultiWidgetRouter
+<DevContainer
   widgets={[
     { id: 'carousel', name: 'Carousel', component: CarouselWidget },
     { id: 'map', name: 'Map', component: MapWidget },
     { id: 'search', name: 'Search', component: SearchWidget }
   ]}
-  sharedConfig={{ loadingDelay: 2000, theme: 'light' }}
   dataLoaders={{ restaurants: () => mockData }}
   defaultWidget="carousel"
 />
@@ -34,7 +33,7 @@ Demonstrates the MultiWidgetRouter for managing multiple widgets in a single dev
 **Features:**
 - Widget switching with dropdown selector
 - URL parameter support (`?widget=map`)
-- Shared configuration across widgets
+- Multiple data sources
 - Persistent widget selection
 - createMockData utility usage
 

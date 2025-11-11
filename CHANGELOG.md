@@ -9,24 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2025-01-11
 
+### Major Improvements
+- **Unified DevContainer** - Single component handles both single and multiple widgets elegantly
+  - Automatic detection: no selector for single widget, dropdown for multiple
+  - Cleaner API with intelligent defaults
+  - Backward-compatible single widget mode via `children` prop
+  - Multi-widget mode via `widgets` array
+
 ### Added
-- **MultiWidgetRouter component** - Manage multiple widgets in a single dev server with an elegant dropdown selector
+- **Multi-widget support** - Manage multiple widgets in a single dev server
   - URL parameter support (`?widget=carousel`) for direct linking
   - localStorage persistence of selected widget
   - Browser back/forward navigation support
-  - Shared DevContainer configuration across all widgets
-  - Centralized data loader management
-- **createMockData utility** - Type-safe mock data management with automatic empty state generation
+  - Multiple data loader management
+- **createMockData utility** - Type-safe mock data management
   - Full TypeScript generics support
   - Three ways to define empty states (explicit, transform, auto-generated)
   - Works with any data structure
-- **Empty state support** - New empty state testing in DevContainer
+- **Empty state support** - Complete widget state coverage
   - `emptyDataLoader` prop for custom empty state data
   - "Empty" button in toolbar for quick state switching
-  - Complete coverage of all common widget states
-- **widgetSelector prop** - Custom widget selector integration in DevContainer toolbar
-  - Enables seamless MultiWidgetRouter integration
-  - Maintains clean separation of concerns
+  - Support for both single and multi-widget modes
 - **Enhanced theme support** - Better full-page theming
   - Body background syncs with theme using CSS variables
   - Improved computed style detection
@@ -35,16 +38,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Reset button to recover from errors
   - Prevents entire dev environment from crashing
 
+### Architecture Changes
+- Removed separate MultiWidgetRouter component
+- Unified all functionality into a single, intelligent DevContainer
+- Simplified exports - just DevContainer and createMockData
+- Cleaner type definitions with better organization
+
 ### Fixed
-- DevContainer padding adjustments for Advanced section
+- WidgetState type now includes 'empty' state
 - Theme-aware background colors using CSS variables
 - Dev Tools visibility (always visible, removed close button)
-- Type duplication in DevContainer (now imports from types/index.ts)
+- Type duplication removed (now imports from types/index.ts)
 
 ### Documentation
-- Comprehensive TypeScript documentation for all new components
-- JSDoc comments with examples for all exports
-- Inline documentation for complex logic
+- Updated for cleaner, unified API
+- Better examples showing both single and multi-widget usage
+- Comprehensive TypeScript documentation
 - Updated package description for broader ChatGPT Apps SDK scope
 
 ## [0.1.0] - 2025-01-10

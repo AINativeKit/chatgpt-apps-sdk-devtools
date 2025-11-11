@@ -5,87 +5,109 @@
 import type { Theme } from '@ainativekit/ui';
 
 /**
+ * Widget configuration for multi-widget development
+ */
+export interface Widget {
+  /** Unique identifier for the widget */
+  id: string;
+  /** Display name for the widget selector */
+  name: string;
+  /** The widget component */
+  component: React.ComponentType;
+}
+
+/**
  * Props for the DevContainer component
+ * Supports both single widget (via children) and multi-widget (via widgets array) modes
  */
 export interface DevContainerProps {
+  // Single widget mode (simple case)
   /**
-   * The widget or app to wrap with dev tools
+   * Single widget to wrap with dev tools
+   * Use this for simple single-widget development
    */
-  children: React.ReactNode;
+  children?: React.ReactNode;
 
   /**
-   * Delay in milliseconds before setting toolOutput (simulates API call)
-   * Useful for testing loading/shimmer states
-   * @default 2000
-   */
-  loadingDelay?: number;
-
-  /**
-   * Initial theme for testing
-   * @default 'light'
-   */
-  theme?: Theme;
-
-  /**
-   * Auto-load data on mount (like production ChatGPT)
-   * @default true
-   */
-  autoLoad?: boolean;
-
-  /**
-   * Custom data loader function
-   * Return your widget-specific mock data here
+   * Data loader for single widget mode
    * @example
    * ```typescript
-   * dataLoader: async () => ({
-   *   type: 'search-results',
-   *   properties: await fetchMockProperties()
-   * })
+   * dataLoader: () => ({ type: 'data', items: [...] })
    * ```
    */
   dataLoader?: () => Promise<any> | any;
 
   /**
-   * Custom empty data loader function
-   * Return your widget-specific empty state data
-   * If not provided, will return a generic empty object
-   * @example
-   * ```typescript
-   * emptyDataLoader: () => ({
-   *   type: 'search-results',
-   *   properties: [],
-   *   searchInfo: { totalResults: 0 }
-   * })
-   * ```
+   * Empty state data loader for single widget mode
    */
   emptyDataLoader?: () => Promise<any> | any;
 
+  // Multi-widget mode
   /**
-   * Initial visibility of dev tools
-   * @default true
+   * Array of widgets for multi-widget development
+   * When provided, enables widget selector dropdown
+   * @example
+   * ```typescript
+   * widgets: [
+   *   { id: 'carousel', name: 'Carousel', component: CarouselWidget },
+   *   { id: 'map', name: 'Map', component: MapWidget }
+   * ]
+   * ```
    */
-  showDevTools?: boolean;
+  widgets?: Widget[];
 
   /**
-   * Position of the toolbar
+   * Map of data loaders for multi-widget mode
+   * Keys are data source names, values are loader functions
+   * @example
+   * ```typescript
+   * dataLoaders: {
+   *   restaurants: () => restaurantData,
+   *   locations: () => locationData
+   * }
+   * ```
+   */
+  dataLoaders?: Record<string, () => Promise<any> | any>;
+
+  /**
+   * Map of empty data loaders for multi-widget mode
+   */
+  emptyDataLoaders?: Record<string, () => Promise<any> | any>;
+
+  /**
+   * Default data loader key to use
+   */
+  defaultDataLoader?: string;
+
+  /**
+   * Default widget ID to show on load
+   */
+  defaultWidget?: string;
+
+  // Common props
+  /**
+   * Delay in milliseconds before loading data (simulates network latency)
+   * @default 2000
+   */
+  loadingDelay?: number;
+
+  /**
+   * Initial theme
+   * @default 'light'
+   */
+  theme?: Theme;
+
+  /**
+   * Auto-load data on mount
+   * @default true
+   */
+  autoLoad?: boolean;
+
+  /**
+   * Toolbar position
    * @default 'top'
    */
   toolbarPosition?: 'top' | 'bottom';
-
-  /**
-   * Custom widget selector component (for multi-widget development)
-   * When provided, displays in the toolbar to allow switching between widgets
-   * @example
-   * ```tsx
-   * widgetSelector: (
-   *   <select onChange={handleChange}>
-   *     <option value="0">Carousel</option>
-   *     <option value="1">Map</option>
-   *   </select>
-   * )
-   * ```
-   */
-  widgetSelector?: React.ReactNode;
 }
 
 /**

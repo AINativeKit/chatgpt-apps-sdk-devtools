@@ -81,16 +81,16 @@ root.render(
 </DevContainer>
 ```
 
-### Multi-Widget Development (v0.2.0+)
+### Multiple Widgets (v0.2.0+)
 
-Use `MultiWidgetRouter` to manage multiple widgets in a single dev server:
+DevContainer automatically detects when you have multiple widgets and shows a selector:
 
 ```typescript
-import { MultiWidgetRouter, createMockData } from '@ainativekit/devtools';
+import { DevContainer, createMockData } from '@ainativekit/devtools';
 import { ThemeProvider } from '@ainativekit/ui';
-import CarouselApp from './widgets/carousel/App';
-import MapApp from './widgets/map/App';
-import SearchApp from './widgets/search/App';
+import CarouselWidget from './widgets/CarouselWidget';
+import MapWidget from './widgets/MapWidget';
+import SearchWidget from './widgets/SearchWidget';
 
 // Create mock data with automatic empty states
 const restaurantData = createMockData(
@@ -104,20 +104,15 @@ const restaurantData = createMockData(
   }
 );
 
-function DevEntry() {
+function App() {
   return (
     <ThemeProvider>
-      <MultiWidgetRouter
+      <DevContainer
         widgets={[
-          { id: 'carousel', name: 'Restaurant Carousel', component: CarouselApp },
-          { id: 'map', name: 'Location Map', component: MapApp },
-          { id: 'search', name: 'Search Results', component: SearchApp }
+          { id: 'carousel', name: 'Restaurant Carousel', component: CarouselWidget },
+          { id: 'map', name: 'Location Map', component: MapWidget },
+          { id: 'search', name: 'Search Results', component: SearchWidget }
         ]}
-        sharedConfig={{
-          loadingDelay: 2000,
-          theme: 'light',
-          autoLoad: true
-        }}
         dataLoaders={{
           restaurants: () => restaurantData.full,
           locations: () => ({ lat: 40.7128, lng: -74.0060 })
@@ -125,47 +120,49 @@ function DevEntry() {
         emptyDataLoaders={{
           restaurants: () => restaurantData.empty
         }}
-        defaultDataLoader="restaurants"
         defaultWidget="carousel"
+        loadingDelay={2000}
+        theme="light"
       />
     </ThemeProvider>
   );
 }
 ```
 
-**Benefits:**
+**Features:**
 - Single dev server for all widgets
-- Instant switching via dropdown selector
-- URL support (`?widget=map`)
-- Shared configuration across widgets
+- Automatic widget selector (only shows when multiple widgets)
+- URL support (`?widget=map`) for deep linking
 - Persistent widget selection
+- Shared data loaders across widgets
 
 ## 📖 API Reference
 
 ### DevContainer Props
 
+#### Single Widget Mode
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `children` | `React.ReactNode` | - | Your widget or app component |
-| `loadingDelay` | `number` | `2000` | Delay (ms) before loading data |
-| `theme` | `'light' \| 'dark'` | `'light'` | Initial theme |
-| `autoLoad` | `boolean` | `true` | Auto-load data on mount |
-| `dataLoader` | `() => Promise<any> \| any` | - | Custom data loader function |
-| `emptyDataLoader` | `() => Promise<any> \| any` | - | Custom empty state data loader |
-| `showDevTools` | `boolean` | `true` | Show/hide dev toolbar |
-| `toolbarPosition` | `'top' \| 'bottom'` | `'top'` | Toolbar position |
-| `widgetSelector` | `React.ReactNode` | - | Custom widget selector UI for toolbar |
+| `children` | `React.ReactNode` | - | Single widget component |
+| `dataLoader` | `() => Promise<any> \| any` | - | Data loader function |
+| `emptyDataLoader` | `() => Promise<any> \| any` | - | Empty state data loader |
 
-### MultiWidgetRouter Props
-
+#### Multi-Widget Mode
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `widgets` | `Widget[]` | - | Array of widget configurations |
-| `sharedConfig` | `DevContainerProps` | `{}` | Shared DevContainer settings |
 | `dataLoaders` | `Record<string, Function>` | `{}` | Map of data loader functions |
 | `emptyDataLoaders` | `Record<string, Function>` | `{}` | Map of empty data loader functions |
 | `defaultDataLoader` | `string` | - | Key for default data loader |
 | `defaultWidget` | `string` | - | ID of default widget to show |
+
+#### Common Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `loadingDelay` | `number` | `2000` | Delay (ms) before loading data |
+| `theme` | `'light' \| 'dark'` | `'light'` | Initial theme |
+| `autoLoad` | `boolean` | `true` | Auto-load data on mount |
+| `toolbarPosition` | `'top' \| 'bottom'` | `'top'` | Toolbar position |
 
 ### createMockData
 

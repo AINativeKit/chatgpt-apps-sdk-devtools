@@ -8,6 +8,7 @@
  * for testing different states, themes, and device types.
  *
  * @example
+ * Single widget (simple case):
  * ```tsx
  * import { DevContainer } from '@ainativekit/devtools';
  * import { ThemeProvider } from '@ainativekit/ui';
@@ -16,12 +17,41 @@
  *   return (
  *     <ThemeProvider>
  *       <DevContainer
+ *         dataLoader={() => ({ data: 'mock' })}
  *         loadingDelay={2000}
- *         dataLoader={async () => ({ data: 'mock' })}
- *         emptyDataLoader={() => ({ data: [] })}
  *       >
  *         <YourWidget />
  *       </DevContainer>
+ *     </ThemeProvider>
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * Multiple widgets:
+ * ```tsx
+ * import { DevContainer, createMockData } from '@ainativekit/devtools';
+ *
+ * const mockData = createMockData(
+ *   { items: [...] },
+ *   { emptyTransform: (data) => ({ ...data, items: [] }) }
+ * );
+ *
+ * function App() {
+ *   return (
+ *     <ThemeProvider>
+ *       <DevContainer
+ *         widgets={[
+ *           { id: 'widget1', name: 'Widget 1', component: Widget1 },
+ *           { id: 'widget2', name: 'Widget 2', component: Widget2 }
+ *         ]}
+ *         dataLoaders={{
+ *           default: () => mockData.full
+ *         }}
+ *         emptyDataLoaders={{
+ *           default: () => mockData.empty
+ *         }}
+ *       />
  *     </ThemeProvider>
  *   );
  * }
@@ -30,39 +60,18 @@
 
 /**
  * Main development container component that simulates ChatGPT environment
+ * Supports both single and multiple widget development
  * @see {@link DevContainerProps} for configuration options
  */
 export { DevContainer } from './components/DevContainer';
 
 /**
- * Multi-widget development router for managing multiple widgets in a single dev server
- * Enables quick navigation between widgets without managing multiple ports
- * @see {@link MultiWidgetRouterProps} for configuration options
- * @example
- * ```tsx
- * import { MultiWidgetRouter } from '@ainativekit/devtools';
- * import { ThemeProvider } from '@ainativekit/ui';
- * import CarouselApp from './widget-carousel/App';
- * import MapApp from './widget-map/App';
- *
- * function DevEntry() {
- *   return (
- *     <ThemeProvider>
- *       <MultiWidgetRouter
- *         widgets={[
- *           { id: 'carousel', name: 'Carousel', component: CarouselApp },
- *           { id: 'map', name: 'Map', component: MapApp }
- *         ]}
- *         sharedConfig={{ loadingDelay: 2000, theme: 'light' }}
- *         dataLoaders={{ restaurants: () => mockData }}
- *         defaultDataLoader="restaurants"
- *       />
- *     </ThemeProvider>
- *   );
- * }
- * ```
+ * Utility function for creating type-safe mock data with automatic empty state generation
+ * @see {@link MockData} for return type
+ * @see {@link MockDataConfig} for configuration options
  */
-export { MultiWidgetRouter } from './components/MultiWidgetRouter';
+export { createMockData } from './utils/createMockData';
+export type { MockData, MockDataConfig } from './utils/createMockData';
 
 // Type exports
 export type {
@@ -70,6 +79,10 @@ export type {
    * Configuration props for DevContainer component
    */
   DevContainerProps,
+  /**
+   * Widget configuration for multi-widget mode
+   */
+  Widget,
   /**
    * Device type for viewport simulation ('desktop' | 'tablet' | 'mobile')
    */
@@ -88,44 +101,6 @@ export type {
   DisplayMode,
   SetGlobalsEvent,
 } from './types';
-
-/**
- * MultiWidgetRouter-specific types
- */
-export type {
-  /**
-   * Widget configuration for MultiWidgetRouter
-   */
-  Widget,
-  /**
-   * Configuration props for MultiWidgetRouter component
-   */
-  MultiWidgetRouterProps,
-} from './components/MultiWidgetRouter';
-
-/**
- * Utility functions for mock data management
- *
- * Provides helpers to create and manage mock data states for development and testing.
- * Works with any data structure and is fully type-safe.
- *
- * @example
- * ```typescript
- * import { createMockData } from '@ainativekit/devtools';
- *
- * const mockRestaurants = createMockData(fullData, {
- *   emptyTransform: (data) => ({ ...data, restaurants: [], totalResults: 0 })
- * });
- *
- * // Use in MultiWidgetRouter
- * <MultiWidgetRouter
- *   dataLoaders={{ restaurants: () => mockRestaurants.full }}
- *   emptyDataLoaders={{ restaurants: () => mockRestaurants.empty }}
- * />
- * ```
- */
-export { createMockData } from './utils/createMockData';
-export type { MockData, MockDataConfig } from './utils/createMockData';
 
 /**
  * Viewport width presets for device simulation

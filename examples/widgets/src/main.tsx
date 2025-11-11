@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { MultiWidgetRouter, createMockData } from '@ainativekit/devtools';
+import { DevContainer, createMockData } from '@ainativekit/devtools';
 import { ThemeProvider } from '@ainativekit/ui';
 
 // Import example widgets
@@ -69,18 +69,16 @@ const searchData = createMockData(
 function DevEntry() {
   return (
     <ThemeProvider>
-      <MultiWidgetRouter
+      <DevContainer
         widgets={[
           { id: 'carousel', name: 'Restaurant Carousel', component: CarouselWidget },
           { id: 'map', name: 'Location Map', component: MapWidget },
           { id: 'search', name: 'Search Results', component: SearchWidget }
         ]}
-        sharedConfig={{
-          loadingDelay: 2000,
-          theme: 'light',
-          autoLoad: true,
-          toolbarPosition: 'top'
-        }}
+        loadingDelay={2000}
+        theme="light"
+        autoLoad={true}
+        toolbarPosition="top"
         dataLoaders={{
           restaurants: () => restaurantData.full,
           locations: () => locationData,

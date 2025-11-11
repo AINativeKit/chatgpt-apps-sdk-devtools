@@ -1,25 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { SetGlobalsEvent, type OpenAiGlobals, type Theme, Button, Chip } from '@ainativekit/ui';
-import type { DevContainerProps } from '../types';
+import type { DevContainerProps, Widget } from '../types';
 
 /**
- * DevContainer - Generic development environment simulator for ChatGPT widgets
+ * DevContainer - Development environment for ChatGPT Apps
  *
- * A completely generic, reusable testing tool for ANY ChatGPT widget.
- * Part of the @ainativekit/devtools package.
+ * Simulates the ChatGPT production environment for local development.
+ * Supports both single widget and multi-widget development with automatic
+ * detection and appropriate UI.
  *
- * This container simulates ChatGPT's production environment by:
- * 1. Mocking the window.openai API
- * 2. Using ChatGPT Apps SDK's SetGlobalsEvent for state updates
- * 3. Providing interactive controls for testing different states
- * 4. Simulating different viewport widths (desktop/tablet/mobile)
- * 5. Applying debug overlays externally (clean separation)
+ * @example
+ * // Single widget
+ * <DevContainer dataLoader={() => mockData}>
+ *   <MyWidget />
+ * </DevContainer>
  *
- * Architecture:
- * - Widget components contain ZERO dev-specific code
- * - All debug tools are external to the widget
- * - Widget code is 100% production-ready
- * - Never included in production builds
+ * @example
+ * // Multiple widgets
+ * <DevContainer
+ *   widgets={[
+ *     { id: 'widget1', name: 'Widget 1', component: Widget1 },
+ *     { id: 'widget2', name: 'Widget 2', component: Widget2 }
+ *   ]}
+ *   dataLoaders={{ data1: () => mockData1, data2: () => mockData2 }}
+ * />
  */
 
 /**
@@ -93,52 +97,134 @@ class ErrorBoundary extends React.Component<
 }
 
 export function DevContainer({
+  // Single widget props (simple case)
   children,
+  dataLoader,
+  emptyDataLoader,
+
+  // Multi-widget props
+  widgets,
+  dataLoaders,
+  emptyDataLoaders,
+  defaultDataLoader,
+  defaultWidget,
+
+  // Common props
   loadingDelay = 2000,
   theme: initialTheme = 'light',
   autoLoad = true,
-  dataLoader,
-  emptyDataLoader,
-  showDevTools: _initialShowDevTools = true, // Kept for backward compatibility but always true
   toolbarPosition = 'top',
-  widgetSelector,
 }: DevContainerProps) {
+  // Normalize to multi-widget structure for consistent handling
+  const normalizedWidgets = useMemo((): Widget[] => {
+    if (widgets && widgets.length > 0) {
+      return widgets;
+    }
+    if (children) {
+      return [{ id: 'default', name: 'App', component: () => children as React.ReactElement }];
+    }
+    return [];
+  }, [widgets, children]);
+
+  const normalizedDataLoaders = useMemo(() => {
+    if (dataLoaders) return dataLoaders;
+    if (dataLoader) return { default: dataLoader };
+    return {};
+  }, [dataLoaders, dataLoader]);
+
+  const normalizedEmptyLoaders = useMemo(() => {
+    if (emptyDataLoaders) return emptyDataLoaders;
+    if (emptyDataLoader) return { default: emptyDataLoader };
+    return {};
+  }, [emptyDataLoaders, emptyDataLoader]);
+
+  // State
   const [isInitialized, setIsInitialized] = useState(false);
   const [widgetState, setWidgetState] = useState<'loading' | 'data' | 'error' | 'empty'>('loading');
   const [isLoading, setIsLoading] = useState(false);
-  const [showDevTools] = useState(true); // Always true - dev environment should always show tools
+  const [showDevTools] = useState(true);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [activeWidgetId, setActiveWidgetId] = useState(defaultWidget || normalizedWidgets[0]?.id || '');
+  const [activeDataLoader, setActiveDataLoader] = useState(defaultDataLoader || Object.keys(normalizedDataLoaders)[0] || '');
 
   // Interactive controls state
   const [mockTheme, setMockTheme] = useState<Theme>(initialTheme);
   const [deviceType, setDeviceType] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [viewportWidth, setViewportWidth] = useState<number>(768); // Desktop width by default
+  const [viewportWidth, setViewportWidth] = useState<number>(768);
   const [debugMode, setDebugMode] = useState<'none' | 'border'>('none');
 
-  // Sync theme to document root for page-level theming
+  // Show widget selector only if there are multiple widgets
+  const showWidgetSelector = normalizedWidgets.length > 1;
+
+  // Sync URL with active widget
+  useEffect(() => {
+    if (!showWidgetSelector) return;
+
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const widgetId = params.get('widget');
+      if (widgetId && normalizedWidgets.some(w => w.id === widgetId)) {
+        setActiveWidgetId(widgetId);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    handlePopState();
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [showWidgetSelector, normalizedWidgets]);
+
+  // Update URL when widget changes
+  useEffect(() => {
+    if (!showWidgetSelector) return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (activeWidgetId && activeWidgetId !== 'default') {
+      params.set('widget', activeWidgetId);
+    } else {
+      params.delete('widget');
+    }
+    const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    if (window.location.search !== newUrl.slice(window.location.pathname.length)) {
+      window.history.pushState(null, '', newUrl);
+    }
+
+    // Persist to localStorage
+    if (activeWidgetId) {
+      localStorage.setItem('devtools.activeWidget', activeWidgetId);
+    }
+  }, [activeWidgetId, showWidgetSelector]);
+
+  // Restore from localStorage
+  useEffect(() => {
+    if (!showWidgetSelector) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const urlWidget = params.get('widget');
+    const savedWidget = localStorage.getItem('devtools.activeWidget');
+
+    if (urlWidget && normalizedWidgets.some(w => w.id === urlWidget)) {
+      setActiveWidgetId(urlWidget);
+    } else if (savedWidget && normalizedWidgets.some(w => w.id === savedWidget)) {
+      setActiveWidgetId(savedWidget);
+    }
+  }, [showWidgetSelector, normalizedWidgets]);
+
+  // Sync theme to document
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', mockTheme);
-    // Set body background to match theme using AINativeKit token
-    // Get computed value after theme attribute is set
-    const bgColor = getComputedStyle(document.documentElement)
-      .getPropertyValue('--ai-color-bg-primary')
-      .trim();
-    if (bgColor) {
-      document.body.style.backgroundColor = bgColor;
-    }
+
+    // Also set body background color
+    const bgColor = mockTheme === 'dark' ? '#1e1e1e' : '#ffffff';
+    document.body.style.backgroundColor = bgColor;
   }, [mockTheme]);
 
-  // Set globals helper using ChatGPT Apps SDK's SetGlobalsEvent
+  // Set globals helper
   const setGlobals = (globals: Partial<OpenAiGlobals>) => {
-    // Ensure window.openai exists before assigning
     if (!window.openai) {
       (window as any).openai = {};
     }
-
-    // Update window.openai with new globals
     Object.assign(window.openai as any, globals);
-
-    // Dispatch ChatGPT Apps SDK's SetGlobalsEvent for type safety
     const event = new SetGlobalsEvent({ globals });
     window.dispatchEvent(event);
   };
@@ -152,499 +238,321 @@ export function DevContainer({
     }
   });
 
-  // Initialize window.openai on mount
+  // Initialize window.openai
   useEffect(() => {
     console.log('🔧 [@ainativekit/devtools] Initializing dev environment...');
 
-    // Initialize window.openai if not present
-    if (!window.openai) {
-      (window as any).openai = {};
-    }
-
-    // Mock OpenAI API methods (matching production ChatGPT behavior)
-    (window as any).openai.callTool = async (name: string, args: Record<string, unknown>) => {
-      console.log('🔧 [@ainativekit/devtools] callTool:', name, args);
-      // In real ChatGPT, this would call the MCP server
-      return { result: 'Mock tool result' };
-    };
-
-    (window as any).openai.sendFollowUpMessage = async ({ prompt }: { prompt: string }) => {
-      console.log('🔧 [@ainativekit/devtools] sendFollowUpMessage:', prompt);
-      // In real ChatGPT, this would send a message to the conversation
-    };
-
-    (window as any).openai.openExternal = ({ href }: { href: string }) => {
-      console.log('🔧 [@ainativekit/devtools] openExternal:', href);
-      window.open(href, '_blank');
-    };
-
-    (window as any).openai.setWidgetState = (state: any) => {
-      console.log('🔧 [@ainativekit/devtools] setWidgetState:', state);
-      // In real ChatGPT, this would persist state
-    };
-
-    // Set initial loading state
-    setGlobals({
+    // Create mock window.openai
+    (window as any).openai = {
+      callTool: async (name: string, args: any) => {
+        console.log('🔨 Mock callTool:', { name, args });
+        return { success: true, data: 'Mock response' };
+      },
+      sendFollowUpMessage: async ({ prompt }: { prompt: string }) => {
+        console.log('💬 Mock sendFollowUpMessage:', prompt);
+        return { success: true };
+      },
+      openExternal: ({ href }: { href: string }) => {
+        console.log('🌐 Mock openExternal:', href);
+        window.open(href, '_blank');
+      },
+      setWidgetState: (state: any) => {
+        console.log('💾 Mock setWidgetState:', state);
+      },
       theme: mockTheme,
-      toolOutput: null, // null triggers loading state
-      locale: 'en',
-      maxHeight: window.innerHeight,
+      toolOutput: null,
+      locale: 'en-US',
+      maxHeight: 600,
       userAgent: getUserAgent(deviceType)
-    });
+    };
 
     setIsInitialized(true);
+    console.log('✅ [@ainativekit/devtools] Dev environment ready');
 
-    // Auto-load data after initialization (like production ChatGPT)
+    // Auto-load data if configured
     if (autoLoad) {
-      console.log('🔧 [@ainativekit/devtools] Auto-loading data...');
-      // Use setTimeout to ensure initialization is complete
-      setTimeout(() => {
-        handleLoadDataDelayed();
-      }, 100);
+      handleDelayedData();
     }
   }, []);
 
-  // Update globals when theme or deviceType changes
+  // Update theme
   useEffect(() => {
-    if (!isInitialized) return;
+    setGlobals({ theme: mockTheme });
+  }, [mockTheme]);
 
-    console.log('🔧 [@ainativekit/devtools] Updating theme/device:', {
-      mockTheme,
-      deviceType
-    });
+  // Update device type
+  useEffect(() => {
+    const widths = { desktop: 768, tablet: 640, mobile: 375 };
+    setViewportWidth(widths[deviceType]);
+    setGlobals({ userAgent: getUserAgent(deviceType) });
+  }, [deviceType]);
 
-    setGlobals({
-      theme: mockTheme,
-      userAgent: getUserAgent(deviceType),
-      locale: 'en',
-      maxHeight: window.innerHeight
-    });
-  }, [mockTheme, deviceType, isInitialized]);
-
-  // Load mock data helper
-  const loadMockData = async () => {
-    if (dataLoader) {
-      return await dataLoader();
-    }
-
-    // Default mock data if no custom loader provided
-    return {
-      type: 'default',
-      message: 'No custom data loader provided. Add a dataLoader prop to DevContainer.',
-      timestamp: new Date().toISOString()
-    };
-  };
-
-  // Show loading state
-  const handleShowLoading = () => {
-    console.log('🔧 [@ainativekit/devtools] Showing loading state...');
+  // Data handlers
+  const handleInstantData = async () => {
+    console.log('📦 Loading data instantly...');
     setWidgetState('loading');
     setIsLoading(false);
 
-    setGlobals({
-      theme: mockTheme,
-      toolOutput: null,
-      locale: 'en',
-      maxHeight: window.innerHeight,
-      userAgent: getUserAgent(deviceType)
-    });
-  };
-
-  // Load data instantly (for quick testing)
-  const handleLoadDataInstant = async () => {
-    console.log('🔧 [@ainativekit/devtools] Loading data instantly...');
-    setWidgetState('data');
-    setIsLoading(false);
-
     try {
-      const toolOutput = await loadMockData();
-
-      console.log('✅ [@ainativekit/devtools] Data loaded:', {
-        type: toolOutput?.type || 'unknown',
-      });
-
-      setGlobals({
-        theme: mockTheme,
-        toolOutput,
-        locale: 'en',
-        maxHeight: window.innerHeight,
-        userAgent: getUserAgent(deviceType)
-      });
+      const loader = normalizedDataLoaders[activeDataLoader];
+      if (!loader) {
+        console.warn('⚠️ No data loader found for key:', activeDataLoader);
+        setGlobals({ toolOutput: {} });
+      } else {
+        const data = await loader();
+        setGlobals({ toolOutput: data });
+        console.log('✅ Data loaded:', data);
+      }
+      setWidgetState('data');
     } catch (error) {
-      console.error('❌ [@ainativekit/devtools] Failed to load mock data:', error);
-      handleShowError();
+      console.error('❌ Error loading data:', error);
+      setWidgetState('error');
+      setGlobals({ toolOutput: { error: error instanceof Error ? error.message : 'Unknown error' } });
     }
   };
 
-  // Load data with delay (for testing loading states)
-  const handleLoadDataDelayed = async () => {
-    console.log(`🔧 [@ainativekit/devtools] Loading data with ${loadingDelay}ms delay...`);
+  const handleDelayedData = async () => {
+    console.log(`⏳ Loading data with ${loadingDelay}ms delay...`);
+    setWidgetState('loading');
     setIsLoading(true);
-    setWidgetState('data'); // Set button state to 'data' immediately
+    setGlobals({ toolOutput: null });
 
-    // Show loading state
-    setGlobals({
-      theme: mockTheme,
-      toolOutput: null,
-      locale: 'en',
-      maxHeight: window.innerHeight,
-      userAgent: getUserAgent(deviceType)
-    });
+    await new Promise(resolve => setTimeout(resolve, loadingDelay));
 
-    // Load data after delay
-    setTimeout(async () => {
-      try {
-        const toolOutput = await loadMockData();
-
-        console.log('✅ [@ainativekit/devtools] Data loaded:', {
-          type: toolOutput?.type || 'unknown',
-        });
-
-        setIsLoading(false);
-        setGlobals({
-          theme: mockTheme,
-          toolOutput,
-          locale: 'en',
-          maxHeight: window.innerHeight,
-          userAgent: getUserAgent(deviceType)
-        });
-      } catch (error) {
-        console.error('❌ [@ainativekit/devtools] Failed to load mock data:', error);
-        setIsLoading(false);
-        handleShowError();
-      }
-    }, loadingDelay);
-  };
-
-  // Show error state
-  const handleShowError = () => {
-    console.log('🔧 [@ainativekit/devtools] Showing error state...');
-    setWidgetState('error');
+    if (isLoading) {
+      await handleInstantData();
+    }
     setIsLoading(false);
-
-    setGlobals({
-      theme: mockTheme,
-      toolOutput: { error: 'Failed to load data. Please try again.' },
-      locale: 'en',
-      maxHeight: window.innerHeight,
-      userAgent: getUserAgent(deviceType)
-    });
   };
 
-  // Show empty state
   const handleShowEmpty = async () => {
-    console.log('🔧 [@ainativekit/devtools] Showing empty state...');
+    console.log('📭 Showing empty state...');
     setWidgetState('empty');
     setIsLoading(false);
 
-    let emptyData;
-
-    // Use the emptyDataLoader if provided by the client
-    if (emptyDataLoader) {
-      try {
-        emptyData = await emptyDataLoader();
-        console.log('✅ [@ainativekit/devtools] Empty data loaded from custom loader:', {
-          type: emptyData?.type || 'unknown',
-        });
-      } catch (error) {
-        console.error('❌ [@ainativekit/devtools] Failed to load empty data:', error);
-        emptyData = { type: 'empty', message: 'No data available' };
-      }
+    const loader = normalizedEmptyLoaders[activeDataLoader];
+    if (!loader) {
+      setGlobals({ toolOutput: {} });
     } else {
-      // Fallback: provide a minimal empty response
-      console.log('ℹ️ [@ainativekit/devtools] No emptyDataLoader provided, using generic empty state');
-      emptyData = {
-        type: 'empty',
-        message: 'No data available',
-        info: 'Provide an emptyDataLoader prop to customize the empty state'
-      };
+      try {
+        const emptyData = await loader();
+        setGlobals({ toolOutput: emptyData });
+        console.log('✅ Empty state loaded:', emptyData);
+      } catch (error) {
+        console.error('❌ Error loading empty state:', error);
+        setGlobals({ toolOutput: {} });
+      }
     }
+  };
 
+  const handleShowError = () => {
+    console.log('❌ Showing error state...');
+    setWidgetState('error');
+    setIsLoading(false);
     setGlobals({
-      theme: mockTheme,
-      toolOutput: emptyData,
-      locale: 'en',
-      maxHeight: window.innerHeight,
-      userAgent: getUserAgent(deviceType)
+      toolOutput: {
+        error: 'Something went wrong',
+        message: 'This is a simulated error for testing error states'
+      }
     });
   };
 
+  const handleShowLoading = () => {
+    console.log('⏳ Showing loading state...');
+    setWidgetState('loading');
+    setIsLoading(false);
+    setGlobals({ toolOutput: null });
+  };
+
   if (!isInitialized) {
-    return null;
+    return <div>Initializing dev environment...</div>;
   }
 
-  const toolbar = (
-    <div
-      data-theme={mockTheme}
-      style={{
-        position: 'fixed',
-        [toolbarPosition]: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'var(--ai-color-bg-secondary)',
-        color: 'var(--ai-color-text-primary)',
-        borderBottom: toolbarPosition === 'top' ? '1px solid var(--ai-color-border-default)' : undefined,
-        borderTop: toolbarPosition === 'bottom' ? '1px solid var(--ai-color-border-default)' : undefined,
-        zIndex: 9999,
-        boxShadow: toolbarPosition === 'top' ? '0 2px 8px rgba(0,0,0,0.15)' : '0 -2px 8px rgba(0,0,0,0.15)',
-      }}>
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '8px 16px',
-        display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        gap: '8px',
-        rowGap: '8px',
-      }}>
-        {/* Dev Tools Label */}
-        <div style={{
-          fontSize: '0.875rem',
-          fontWeight: '600',
-          color: 'var(--ai-color-text-primary)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px'
-        }}>
-          <span>🛠️</span>
-          <span>Dev Tools</span>
-        </div>
+  const activeWidget = normalizedWidgets.find(w => w.id === activeWidgetId) || normalizedWidgets[0];
+  if (!activeWidget) {
+    return <div>No widget configured. Pass children or widgets prop to DevContainer.</div>;
+  }
 
-        {/* Widget Selector (if provided) */}
-        {widgetSelector && (
-          <>
-            {/* Separator */}
-            <div style={{
-              height: '20px',
-              width: '1px',
-              backgroundColor: 'var(--ai-color-border-heavy)',
-            }} />
-            {widgetSelector}
-          </>
-        )}
-
-        {showDevTools && (
-          <>
-            {/* Separator */}
-            <div style={{
-              height: '20px',
-              width: '1px',
-              backgroundColor: 'var(--ai-color-border-heavy)',
-            }} />
-
-            {/* PRIMARY SECTION: Widget State */}
-            <div style={{ display: 'flex', gap: '4px', flexWrap: 'nowrap', alignItems: 'center' }}>
-              <span style={{
-                fontSize: '0.75rem',
-                color: 'var(--ai-color-text-tertiary)',
-                fontWeight: '500',
-                marginRight: '4px'
-              }}>
-                State:
-              </span>
-              <Chip
-                size="sm"
-                selected={widgetState === 'loading'}
-                onClick={handleShowLoading}
-                disabled={isLoading}
-                title="Show loading state"
-              >
-                Loading
-              </Chip>
-              <Chip
-                size="sm"
-                variant={widgetState === 'data' && !isLoading ? 'success' : 'default'}
-                selected={widgetState === 'data' && !isLoading}
-                onClick={handleLoadDataInstant}
-                disabled={isLoading}
-                title="Load data instantly"
-              >
-                Instant
-              </Chip>
-              <Chip
-                size="sm"
-                variant={widgetState === 'data' && isLoading ? 'success' : 'default'}
-                selected={widgetState === 'data' && isLoading}
-                onClick={handleLoadDataDelayed}
-                disabled={isLoading}
-                title={`Load data with ${loadingDelay}ms delay`}
-              >
-                {isLoading && widgetState === 'data' ? '⏳' : 'Delayed'}
-              </Chip>
-              <Chip
-                size="sm"
-                selected={widgetState === 'empty'}
-                onClick={handleShowEmpty}
-                disabled={isLoading}
-                title="Show empty state (no data)"
-              >
-                Empty
-              </Chip>
-              <Chip
-                size="sm"
-                variant={widgetState === 'error' ? 'error' : 'default'}
-                selected={widgetState === 'error'}
-                onClick={handleShowError}
-                disabled={isLoading}
-                title="Show error state"
-              >
-                Error
-              </Chip>
-            </div>
-
-            {/* Separator */}
-            <div style={{
-              height: '20px',
-              width: '1px',
-              backgroundColor: 'var(--ai-color-border-heavy)',
-            }} />
-
-            {/* PRIMARY SECTION: Theme */}
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center', flexWrap: 'nowrap' }}>
-              <span style={{
-                fontSize: '0.75rem',
-                color: 'var(--ai-color-text-tertiary)',
-                fontWeight: '500',
-                marginRight: '4px'
-              }}>
-                Theme:
-              </span>
-              <Chip
-                size="sm"
-                leftIcon="color-theme"
-                variant={mockTheme === 'light' ? 'success' : 'default'}
-                selected={mockTheme === 'light'}
-                onClick={() => setMockTheme('light')}
-                title="Switch to light theme"
-              >
-                Light
-              </Chip>
-              <Chip
-                size="sm"
-                leftIcon="color-theme"
-                variant={mockTheme === 'dark' ? 'success' : 'default'}
-                selected={mockTheme === 'dark'}
-                onClick={() => setMockTheme('dark')}
-                title="Switch to dark theme"
-              >
-                Dark
-              </Chip>
-            </div>
-
-            {/* Separator */}
-            <div style={{
-              height: '20px',
-              width: '1px',
-              backgroundColor: 'var(--ai-color-border-heavy)',
-            }} />
-
-            {/* Advanced Settings Toggle */}
-            <Button
-              variant={showAdvancedSettings ? 'primary' : 'tertiary'}
-              leftIcon={showAdvancedSettings ? "chevron-down-md" : "chevron-right-md"}
-              onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
-              title="Toggle advanced settings"
-            >
-              Advanced
-            </Button>
-
-            {/* ADVANCED SECTION: Second row when expanded */}
-            {showAdvancedSettings && (
-              <div style={{
-                width: '100%',
-                display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                gap: '8px',
-                paddingTop: '8px',
-                borderTop: '1px solid var(--ai-color-border-light)',
-              }}>
-                <span style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--ai-color-text-tertiary)',
-                  fontWeight: '500',
-                  marginRight: '4px'
-                }}>
-                  Advanced:
-                </span>
-
-                {/* Device type & viewport width selector */}
-                <select
-                  value={deviceType}
-                  onChange={(e) => {
-                    const device = e.target.value as 'desktop' | 'tablet' | 'mobile';
-                    setDeviceType(device);
-                    // Auto-update viewport width based on device
-                    if (device === 'desktop') setViewportWidth(768);
-                    else if (device === 'tablet') setViewportWidth(640);
-                    else setViewportWidth(375);
-                  }}
-                  title="Simulate different device types and viewport widths"
-                  style={{
-                    fontSize: '0.75rem',
-                    backgroundColor: 'var(--ai-color-bg-tertiary)',
-                    color: 'var(--ai-color-text-primary)',
-                    border: '1px solid var(--ai-color-border-default)',
-                    borderRadius: '6px',
-                    padding: '6px 10px',
-                    cursor: 'pointer',
-                    minWidth: '120px',
-                  }}
-                >
-                  <option value="desktop">Desktop - 768px</option>
-                  <option value="tablet">Tablet - 640px</option>
-                  <option value="mobile">Mobile - 375px</option>
-                </select>
-
-                {/* Debug overlay toggle */}
-                <Button
-                  variant={debugMode !== 'none' ? 'primary' : 'tertiary'}
-                  leftIcon="bug"
-                  onClick={() => {
-                    setDebugMode(debugMode === 'none' ? 'border' : 'none');
-                  }}
-                  title="Toggle debug overlay"
-                >
-                  {debugMode === 'border' ? 'Border On' : 'Debug'}
-                </Button>
-
-                {/* Generic debug info */}
-                <div style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--ai-color-text-tertiary)',
-                  display: 'flex',
-                  gap: '12px',
-                  marginLeft: '12px',
-                }}>
-                  {!!window.openai?.toolOutput?.type && (
-                    <span>Type: <strong style={{ color: 'var(--ai-color-text-secondary)' }}>{String(window.openai.toolOutput.type)}</strong></span>
-                  )}
-                  {!!window.openai?.maxHeight && (
-                    <span>Max Height: <strong style={{ color: 'var(--ai-color-text-secondary)' }}>{String(window.openai.maxHeight)}px</strong></span>
-                  )}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
+  const ActiveComponent = activeWidget.component;
 
   return (
-    <>
-      {/* Toolbar */}
-      {toolbar}
+    <div style={{ width: '100%', minHeight: '100vh', position: 'relative' }}>
+      {/* Dev Toolbar */}
+      {showDevTools && (
+        <div style={{
+          position: 'fixed',
+          [toolbarPosition]: 0,
+          left: 0,
+          right: 0,
+          background: 'var(--ai-color-bg-secondary, #f9f9f9)',
+          borderBottom: toolbarPosition === 'top' ? '1px solid var(--ai-color-border-primary, #e0e0e0)' : 'none',
+          borderTop: toolbarPosition === 'bottom' ? '1px solid var(--ai-color-border-primary, #e0e0e0)' : 'none',
+          padding: '12px 20px',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+        }}>
+          {/* Main Controls */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontWeight: 'bold', fontSize: '14px', marginRight: '8px' }}>
+              🔧 Dev Tools
+            </span>
 
-      {/* Content area with padding */}
+            {/* Widget Selector (only shown for multiple widgets) */}
+            {showWidgetSelector && (
+              <select
+                value={activeWidgetId}
+                onChange={(e) => setActiveWidgetId(e.target.value)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid var(--ai-color-border-primary, #ddd)',
+                  background: 'var(--ai-color-bg-primary, white)',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  minWidth: '150px'
+                }}
+              >
+                {normalizedWidgets.map(widget => (
+                  <option key={widget.id} value={widget.id}>
+                    {widget.name}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Data Loader Selector (if multiple) */}
+            {Object.keys(normalizedDataLoaders).length > 1 && (
+              <select
+                value={activeDataLoader}
+                onChange={(e) => setActiveDataLoader(e.target.value)}
+                title="Select data source"
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid var(--ai-color-border-primary, #ddd)',
+                  background: 'var(--ai-color-bg-primary, white)',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  minWidth: '120px'
+                }}
+              >
+                {Object.keys(normalizedDataLoaders).map(key => (
+                  <option key={key} value={key}>
+                    Data: {key}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* State Controls */}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Button
+                onClick={handleShowLoading}
+                disabled={widgetState === 'loading' && !isLoading}
+              >
+                Loading
+              </Button>
+              <Button
+                onClick={handleInstantData}
+                disabled={isLoading}
+              >
+                Instant Data
+              </Button>
+              <Button
+                onClick={handleDelayedData}
+                disabled={isLoading}
+              >
+                Delayed Data
+              </Button>
+              <Button
+                onClick={handleShowEmpty}
+                disabled={isLoading}
+              >
+                Empty
+              </Button>
+              <Button
+                onClick={handleShowError}
+                disabled={isLoading}
+              >
+                Error
+              </Button>
+            </div>
+
+            {/* Theme Toggle */}
+            <Button
+              onClick={() => setMockTheme(mockTheme === 'light' ? 'dark' : 'light')}
+              title={`Switch to ${mockTheme === 'light' ? 'dark' : 'light'} theme`}
+            >
+              {mockTheme === 'light' ? '🌙' : '☀️'}
+            </Button>
+
+            {/* Advanced Toggle */}
+            <Button
+              onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+            >
+              {showAdvancedSettings ? '▼' : '▶'} Advanced
+            </Button>
+          </div>
+
+          {/* Advanced Settings */}
+          {showAdvancedSettings && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              {/* Device Type */}
+              <select
+                value={deviceType}
+                onChange={(e) => setDeviceType(e.target.value as 'desktop' | 'tablet' | 'mobile')}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid var(--ai-color-border-primary, #ddd)',
+                  background: 'var(--ai-color-bg-primary, white)',
+                  fontSize: '14px',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="desktop">💻 Desktop (768px)</option>
+                <option value="tablet">📱 Tablet (640px)</option>
+                <option value="mobile">📱 Mobile (375px)</option>
+              </select>
+
+              {/* Debug Mode */}
+              <Button
+                onClick={() => setDebugMode(debugMode === 'none' ? 'border' : 'none')}
+                title="Toggle debug border"
+              >
+                Debug: {debugMode === 'border' ? 'ON' : 'OFF'}
+              </Button>
+
+              {/* Status Chips */}
+              <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+                <Chip>
+                  State: {widgetState}
+                </Chip>
+                <Chip>
+                  Theme: {mockTheme}
+                </Chip>
+                <Chip>
+                  Width: {viewportWidth}px
+                </Chip>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Main Content Area */}
       <div style={{
-        [toolbarPosition === 'top' ? 'paddingTop' : 'paddingBottom']: showAdvancedSettings ? '160px' : '100px',
-        background: 'var(--ai-color-bg-primary)',
-        minHeight: '100vh',
-        transition: 'padding 0.2s ease'
+        paddingTop: showDevTools && toolbarPosition === 'top'
+          ? showAdvancedSettings ? '120px' : '70px'
+          : '0',
+        paddingBottom: showDevTools && toolbarPosition === 'bottom'
+          ? showAdvancedSettings ? '120px' : '70px'
+          : '0',
       }}>
-        {/* Apply viewport width constraint */}
+        {/* Viewport Constraint */}
         <div style={{
           maxWidth: `${viewportWidth}px`,
           margin: '0 auto',
@@ -653,10 +561,10 @@ export function DevContainer({
           overflowX: 'hidden',
         }}>
           <ErrorBoundary>
-            {children}
+            <ActiveComponent />
           </ErrorBoundary>
 
-          {/* Debug border overlay */}
+          {/* Debug Border */}
           {debugMode === 'border' && (
             <div
               style={{
@@ -666,27 +574,13 @@ export function DevContainer({
                 right: 0,
                 bottom: 0,
                 pointerEvents: 'none',
-                border: '4px dashed rgba(239, 68, 68, 0.6)',
-                boxSizing: 'border-box',
-                zIndex: 9997,
+                border: '2px dashed red',
+                zIndex: 9998,
               }}
-            >
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                backgroundColor: 'rgba(239, 68, 68, 0.9)',
-                color: 'white',
-                padding: '2px 6px',
-                fontSize: '0.75rem',
-                fontWeight: '500',
-              }}>
-                Widget Boundary
-              </div>
-            </div>
+            />
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
