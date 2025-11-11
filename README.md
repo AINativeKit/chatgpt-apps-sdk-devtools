@@ -310,7 +310,7 @@ import { mockSearchResults } from './mockData';
 The DevContainer follows these principles:
 
 1. **Zero Widget Contamination** - Your widget code contains no dev-specific logic
-2. **Production Parity** - Uses the same APIs as production ChatGPT
+2. **Production Parity** - Uses the same APIs as production ChatGPT Apps
 3. **External Debugging** - All debug overlays are applied from outside the widget
 4. **Type Safety** - Full TypeScript support with AINativeKit types
 5. **Clean Separation** - Dev tools are never included in production builds
