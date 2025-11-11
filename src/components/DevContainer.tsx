@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { SetGlobalsEvent, type OpenAiGlobals, type Theme, Button, Chip } from '@ainativekit/ui';
+import { SetGlobalsEvent, type OpenAiGlobals, type Theme } from '@ainativekit/ui';
 import type { DevContainerProps, Widget } from '../types';
 
 /**
@@ -384,43 +384,89 @@ export function DevContainer({
           [toolbarPosition]: 0,
           left: 0,
           right: 0,
-          background: 'var(--ai-color-bg-secondary, #f9f9f9)',
-          borderBottom: toolbarPosition === 'top' ? '1px solid var(--ai-color-border-primary, #e0e0e0)' : 'none',
-          borderTop: toolbarPosition === 'bottom' ? '1px solid var(--ai-color-border-primary, #e0e0e0)' : 'none',
-          padding: '12px 20px',
+          background: 'linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(250,250,250,0.98))',
+          backdropFilter: 'blur(10px)',
+          borderBottom: toolbarPosition === 'top' ? '1px solid rgba(0,0,0,0.08)' : 'none',
+          borderTop: toolbarPosition === 'bottom' ? '1px solid rgba(0,0,0,0.08)' : 'none',
+          padding: '12px 16px',
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+          gap: '10px',
+          boxShadow: toolbarPosition === 'top'
+            ? '0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.08)'
+            : '0 -4px 12px rgba(0,0,0,0.05), 0 -1px 3px rgba(0,0,0,0.08)',
         }}>
           {/* Main Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 'bold', fontSize: '14px', marginRight: '8px' }}>
-              🔧 Dev Tools
-            </span>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            flexWrap: 'wrap',
+          }}>
+            {/* Logo and Title */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              paddingRight: '12px',
+              borderRight: '1px solid rgba(0,0,0,0.1)',
+              marginRight: '4px',
+            }}>
+              <span style={{ fontSize: '16px' }}>⚡</span>
+              <span style={{
+                fontWeight: '600',
+                fontSize: '13px',
+                color: '#333',
+                letterSpacing: '-0.01em',
+              }}>
+                Dev Tools
+              </span>
+            </div>
 
             {/* Widget Selector (only shown for multiple widgets) */}
             {showWidgetSelector && (
-              <select
-                value={activeWidgetId}
-                onChange={(e) => setActiveWidgetId(e.target.value)}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  border: '1px solid var(--ai-color-border-primary, #ddd)',
-                  background: 'var(--ai-color-bg-primary, white)',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  minWidth: '150px'
-                }}
-              >
-                {normalizedWidgets.map(widget => (
-                  <option key={widget.id} value={widget.id}>
-                    {widget.name}
-                  </option>
-                ))}
-              </select>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}>
+                <select
+                  value={activeWidgetId}
+                  onChange={(e) => setActiveWidgetId(e.target.value)}
+                  style={{
+                    padding: '5px 10px',
+                    paddingRight: '28px',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(0,0,0,0.12)',
+                    background: 'white',
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    minWidth: '140px',
+                    appearance: 'none',
+                    backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 10px center',
+                    transition: 'border-color 0.15s, box-shadow 0.15s',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(0,0,0,0.12)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  {normalizedWidgets.map(widget => (
+                    <option key={widget.id} value={widget.id}>
+                      {widget.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )}
 
             {/* Data Loader Selector (if multiple) */}
@@ -430,113 +476,405 @@ export function DevContainer({
                 onChange={(e) => setActiveDataLoader(e.target.value)}
                 title="Select data source"
                 style={{
-                  padding: '6px 12px',
+                  padding: '5px 10px',
+                  paddingRight: '28px',
                   borderRadius: '6px',
-                  border: '1px solid var(--ai-color-border-primary, #ddd)',
-                  background: 'var(--ai-color-bg-primary, white)',
-                  fontSize: '14px',
+                  border: '1px solid rgba(0,0,0,0.12)',
+                  background: 'white',
+                  fontSize: '13px',
+                  fontWeight: '500',
                   cursor: 'pointer',
-                  minWidth: '120px'
+                  minWidth: '110px',
+                  appearance: 'none',
+                  backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 10px center',
+                  transition: 'border-color 0.15s, box-shadow 0.15s',
+                  outline: 'none',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3b82f6';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(0,0,0,0.12)';
+                  e.target.style.boxShadow = 'none';
                 }}
               >
                 {Object.keys(normalizedDataLoaders).map(key => (
                   <option key={key} value={key}>
-                    Data: {key}
+                    📊 {key}
                   </option>
                 ))}
               </select>
             )}
 
+            {/* Separator */}
+            <div style={{
+              width: '1px',
+              height: '20px',
+              background: 'rgba(0,0,0,0.1)',
+              margin: '0 4px',
+            }} />
+
             {/* State Controls */}
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <Button
+            <div style={{
+              display: 'flex',
+              gap: '4px',
+              background: 'rgba(0,0,0,0.03)',
+              padding: '3px',
+              borderRadius: '8px',
+            }}>
+              <button
                 onClick={handleShowLoading}
                 disabled={widgetState === 'loading' && !isLoading}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '5px',
+                  border: 'none',
+                  background: widgetState === 'loading' ? '#3b82f6' : 'transparent',
+                  color: widgetState === 'loading' ? 'white' : '#555',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: widgetState === 'loading' && !isLoading ? 'default' : 'pointer',
+                  transition: 'all 0.15s',
+                  opacity: (widgetState === 'loading' && !isLoading) ? 0.5 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (widgetState !== 'loading' && !e.currentTarget.disabled) {
+                    e.currentTarget.style.background = 'rgba(59,130,246,0.1)';
+                    e.currentTarget.style.color = '#3b82f6';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (widgetState !== 'loading') {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#555';
+                  }
+                }}
               >
-                Loading
-              </Button>
-              <Button
+                ⏳ Loading
+              </button>
+              <button
                 onClick={handleInstantData}
                 disabled={isLoading}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '5px',
+                  border: 'none',
+                  background: widgetState === 'data' && !isLoading ? '#10b981' : 'transparent',
+                  color: widgetState === 'data' && !isLoading ? 'white' : '#555',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: isLoading ? 'default' : 'pointer',
+                  transition: 'all 0.15s',
+                  opacity: isLoading ? 0.5 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (widgetState !== 'data' && !e.currentTarget.disabled) {
+                    e.currentTarget.style.background = 'rgba(16,185,129,0.1)';
+                    e.currentTarget.style.color = '#10b981';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (widgetState !== 'data' || isLoading) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#555';
+                  }
+                }}
               >
-                Instant Data
-              </Button>
-              <Button
+                ⚡ Instant
+              </button>
+              <button
                 onClick={handleDelayedData}
                 disabled={isLoading}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '5px',
+                  border: 'none',
+                  background: 'transparent',
+                  color: '#555',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: isLoading ? 'default' : 'pointer',
+                  transition: 'all 0.15s',
+                  opacity: isLoading ? 0.5 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.disabled) {
+                    e.currentTarget.style.background = 'rgba(16,185,129,0.1)';
+                    e.currentTarget.style.color = '#10b981';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#555';
+                }}
               >
-                Delayed Data
-              </Button>
-              <Button
+                ⏱️ Delayed
+              </button>
+              <button
                 onClick={handleShowEmpty}
                 disabled={isLoading}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '5px',
+                  border: 'none',
+                  background: widgetState === 'empty' ? '#f59e0b' : 'transparent',
+                  color: widgetState === 'empty' ? 'white' : '#555',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: isLoading ? 'default' : 'pointer',
+                  transition: 'all 0.15s',
+                  opacity: isLoading ? 0.5 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (widgetState !== 'empty' && !e.currentTarget.disabled) {
+                    e.currentTarget.style.background = 'rgba(245,158,11,0.1)';
+                    e.currentTarget.style.color = '#f59e0b';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (widgetState !== 'empty') {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#555';
+                  }
+                }}
               >
-                Empty
-              </Button>
-              <Button
+                📭 Empty
+              </button>
+              <button
                 onClick={handleShowError}
                 disabled={isLoading}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '5px',
+                  border: 'none',
+                  background: widgetState === 'error' ? '#ef4444' : 'transparent',
+                  color: widgetState === 'error' ? 'white' : '#555',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: isLoading ? 'default' : 'pointer',
+                  transition: 'all 0.15s',
+                  opacity: isLoading ? 0.5 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (widgetState !== 'error' && !e.currentTarget.disabled) {
+                    e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
+                    e.currentTarget.style.color = '#ef4444';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (widgetState !== 'error') {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#555';
+                  }
+                }}
               >
-                Error
-              </Button>
+                ⚠️ Error
+              </button>
             </div>
 
+            {/* Separator */}
+            <div style={{
+              width: '1px',
+              height: '20px',
+              background: 'rgba(0,0,0,0.1)',
+              margin: '0 4px',
+            }} />
+
             {/* Theme Toggle */}
-            <Button
+            <button
               onClick={() => setMockTheme(mockTheme === 'light' ? 'dark' : 'light')}
               title={`Switch to ${mockTheme === 'light' ? 'dark' : 'light'} theme`}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: '1px solid rgba(0,0,0,0.12)',
+                background: 'white',
+                fontSize: '14px',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(0,0,0,0.05)';
+                e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'white';
+                e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)';
+              }}
             >
               {mockTheme === 'light' ? '🌙' : '☀️'}
-            </Button>
+            </button>
+
+            {/* Spacer */}
+            <div style={{ flex: 1, minWidth: '20px' }} />
 
             {/* Advanced Toggle */}
-            <Button
+            <button
               onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: showAdvancedSettings ? 'rgba(59,130,246,0.1)' : 'transparent',
+                color: showAdvancedSettings ? '#3b82f6' : '#666',
+                fontSize: '12px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(59,130,246,0.1)';
+                e.currentTarget.style.color = '#3b82f6';
+              }}
+              onMouseLeave={(e) => {
+                if (!showAdvancedSettings) {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#666';
+                }
+              }}
             >
-              {showAdvancedSettings ? '▼' : '▶'} Advanced
-            </Button>
+              <span style={{
+                transform: showAdvancedSettings ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+                fontSize: '10px',
+              }}>
+                ▶
+              </span>
+              Advanced
+            </button>
           </div>
 
           {/* Advanced Settings */}
           {showAdvancedSettings && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              flexWrap: 'wrap',
+              paddingTop: '8px',
+              borderTop: '1px solid rgba(0,0,0,0.06)',
+            }}>
               {/* Device Type */}
-              <select
-                value={deviceType}
-                onChange={(e) => setDeviceType(e.target.value as 'desktop' | 'tablet' | 'mobile')}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}>
+                <span style={{ fontSize: '12px', color: '#666', fontWeight: '500' }}>Device:</span>
+                <select
+                  value={deviceType}
+                  onChange={(e) => setDeviceType(e.target.value as 'desktop' | 'tablet' | 'mobile')}
+                  style={{
+                    padding: '4px 8px',
+                    paddingRight: '24px',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(0,0,0,0.12)',
+                    background: 'white',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    appearance: 'none',
+                    backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 6px center',
+                    transition: 'border-color 0.15s',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(0,0,0,0.12)';
+                  }}
+                >
+                  <option value="desktop">💻 Desktop (768px)</option>
+                  <option value="tablet">📱 Tablet (640px)</option>
+                  <option value="mobile">📱 Mobile (375px)</option>
+                </select>
+              </div>
+
+              {/* Debug Mode Toggle */}
+              <button
+                onClick={() => setDebugMode(debugMode === 'none' ? 'border' : 'none')}
+                title="Toggle debug borders"
                 style={{
-                  padding: '6px 12px',
+                  padding: '4px 10px',
                   borderRadius: '6px',
-                  border: '1px solid var(--ai-color-border-primary, #ddd)',
-                  background: 'var(--ai-color-bg-primary, white)',
-                  fontSize: '14px',
-                  cursor: 'pointer'
+                  border: '1px solid',
+                  borderColor: debugMode === 'border' ? '#ef4444' : 'rgba(0,0,0,0.12)',
+                  background: debugMode === 'border' ? 'rgba(239,68,68,0.1)' : 'white',
+                  color: debugMode === 'border' ? '#ef4444' : '#666',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={(e) => {
+                  if (debugMode !== 'border') {
+                    e.currentTarget.style.borderColor = '#ef4444';
+                    e.currentTarget.style.background = 'rgba(239,68,68,0.05)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (debugMode !== 'border') {
+                    e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)';
+                    e.currentTarget.style.background = 'white';
+                  }
                 }}
               >
-                <option value="desktop">💻 Desktop (768px)</option>
-                <option value="tablet">📱 Tablet (640px)</option>
-                <option value="mobile">📱 Mobile (375px)</option>
-              </select>
+                🔍 Debug: {debugMode === 'border' ? 'ON' : 'OFF'}
+              </button>
 
-              {/* Debug Mode */}
-              <Button
-                onClick={() => setDebugMode(debugMode === 'none' ? 'border' : 'none')}
-                title="Toggle debug border"
-              >
-                Debug: {debugMode === 'border' ? 'ON' : 'OFF'}
-              </Button>
+              {/* Spacer */}
+              <div style={{ flex: 1, minWidth: '20px' }} />
 
-              {/* Status Chips */}
-              <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
-                <Chip>
-                  State: {widgetState}
-                </Chip>
-                <Chip>
-                  Theme: {mockTheme}
-                </Chip>
-                <Chip>
-                  Width: {viewportWidth}px
-                </Chip>
+              {/* Status Indicators */}
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'center',
+              }}>
+                <span style={{
+                  padding: '3px 10px',
+                  borderRadius: '12px',
+                  background: 'rgba(59,130,246,0.1)',
+                  color: '#3b82f6',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  letterSpacing: '0.02em',
+                }}>
+                  {widgetState.toUpperCase()}
+                </span>
+                <span style={{
+                  padding: '3px 10px',
+                  borderRadius: '12px',
+                  background: mockTheme === 'dark' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.5)',
+                  color: '#666',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                }}>
+                  {mockTheme === 'dark' ? '🌙' : '☀️'} {mockTheme.toUpperCase()}
+                </span>
+                <span style={{
+                  padding: '3px 10px',
+                  borderRadius: '12px',
+                  background: 'rgba(0,0,0,0.05)',
+                  color: '#666',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                }}>
+                  {viewportWidth}px
+                </span>
               </div>
             </div>
           )}
