@@ -451,11 +451,7 @@ export function DevContainer({
 
             {/* Widget Selector (only shown for multiple widgets) */}
             {showWidgetSelector && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}>
+              <div style={{ position: 'relative', display: 'inline-block' }}>
                 <select
                   value={activeWidgetId}
                   onChange={(e) => setActiveWidgetId(e.target.value)}
@@ -473,12 +469,6 @@ export function DevContainer({
                     WebkitAppearance: 'none',
                     MozAppearance: 'none',
                     appearance: 'none',
-                    backgroundImage: mockTheme === 'dark'
-                      ? `linear-gradient(45deg, transparent 50%, #aaa 50%), linear-gradient(135deg, #aaa 50%, transparent 50%), linear-gradient(to bottom, #2a2a2a, #2a2a2a)`
-                      : `linear-gradient(45deg, transparent 50%, #666 50%), linear-gradient(135deg, #666 50%, transparent 50%), linear-gradient(to bottom, white, white)`,
-                    backgroundPosition: 'calc(100% - 15px) center, calc(100% - 10px) center, 0 0',
-                    backgroundSize: '5px 5px, 5px 5px, 100% 100%',
-                    backgroundRepeat: 'no-repeat',
                     transition: 'border-color 0.15s, box-shadow 0.15s',
                     outline: 'none',
                   }}
@@ -497,53 +487,67 @@ export function DevContainer({
                     </option>
                   ))}
                 </select>
+                <span style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  pointerEvents: 'none',
+                  color: mockTheme === 'dark' ? '#aaa' : '#666',
+                  fontSize: '10px',
+                }}>▼</span>
               </div>
             )}
 
             {/* Data Loader Selector (if multiple) */}
             {Object.keys(normalizedDataLoaders).length > 1 && (
-              <select
-                value={activeDataLoader}
-                onChange={(e) => setActiveDataLoader(e.target.value)}
-                title="Select data source"
-                style={{
-                  padding: '5px 10px',
-                  paddingRight: '28px',
-                  borderRadius: '6px',
-                  border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
-                  background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
-                  color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  minWidth: '110px',
-                  WebkitAppearance: 'none',
-                  MozAppearance: 'none',
-                  appearance: 'none',
-                  backgroundImage: mockTheme === 'dark'
-                    ? `linear-gradient(45deg, transparent 50%, #aaa 50%), linear-gradient(135deg, #aaa 50%, transparent 50%), linear-gradient(to bottom, #2a2a2a, #2a2a2a)`
-                    : `linear-gradient(45deg, transparent 50%, #666 50%), linear-gradient(135deg, #666 50%, transparent 50%), linear-gradient(to bottom, white, white)`,
-                  backgroundPosition: 'calc(100% - 15px) center, calc(100% - 10px) center, 0 0',
-                  backgroundSize: '5px 5px, 5px 5px, 100% 100%',
-                  backgroundRepeat: 'no-repeat',
-                  transition: 'border-color 0.15s, box-shadow 0.15s',
-                  outline: 'none',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#3b82f6';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
-                  e.target.style.boxShadow = 'none';
-                }}
-              >
-                {Object.keys(normalizedDataLoaders).map(key => (
-                  <option key={key} value={key}>
-                    📊 {key}
-                  </option>
-                ))}
-              </select>
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <select
+                  value={activeDataLoader}
+                  onChange={(e) => setActiveDataLoader(e.target.value)}
+                  title="Select data source"
+                  style={{
+                    padding: '5px 10px',
+                    paddingRight: '28px',
+                    borderRadius: '6px',
+                    border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
+                    background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
+                    color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    minWidth: '110px',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                    appearance: 'none',
+                    transition: 'border-color 0.15s, box-shadow 0.15s',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  {Object.keys(normalizedDataLoaders).map(key => (
+                    <option key={key} value={key}>
+                      📊 {key}
+                    </option>
+                  ))}
+                </select>
+                <span style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  pointerEvents: 'none',
+                  color: mockTheme === 'dark' ? '#aaa' : '#666',
+                  fontSize: '10px',
+                }}>▼</span>
+              </div>
             )}
 
             {/* Separator */}
@@ -807,42 +811,47 @@ export function DevContainer({
                 gap: '6px',
               }}>
                 <span style={{ fontSize: '12px', color: mockTheme === 'dark' ? '#aaa' : '#666', fontWeight: '500' }}>Device:</span>
-                <select
-                  value={deviceType}
-                  onChange={(e) => setDeviceType(e.target.value as 'desktop' | 'tablet' | 'mobile')}
-                  style={{
-                    padding: '4px 8px',
-                    paddingRight: '24px',
-                    borderRadius: '6px',
-                    border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
-                    background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
-                    color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    WebkitAppearance: 'none',
-                    MozAppearance: 'none',
-                    appearance: 'none',
-                    backgroundImage: mockTheme === 'dark'
-                      ? `linear-gradient(45deg, transparent 50%, #aaa 50%), linear-gradient(135deg, #aaa 50%, transparent 50%), linear-gradient(to bottom, #2a2a2a, #2a2a2a)`
-                      : `linear-gradient(45deg, transparent 50%, #666 50%), linear-gradient(135deg, #666 50%, transparent 50%), linear-gradient(to bottom, white, white)`,
-                    backgroundPosition: 'calc(100% - 13px) center, calc(100% - 8px) center, 0 0',
-                    backgroundSize: '5px 5px, 5px 5px, 100% 100%',
-                    backgroundRepeat: 'no-repeat',
-                    transition: 'border-color 0.15s',
-                    outline: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#3b82f6';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
-                  }}
-                >
-                  <option value="desktop">💻 Desktop (768px)</option>
-                  <option value="tablet">📱 Tablet (640px)</option>
-                  <option value="mobile">📱 Mobile (375px)</option>
-                </select>
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <select
+                    value={deviceType}
+                    onChange={(e) => setDeviceType(e.target.value as 'desktop' | 'tablet' | 'mobile')}
+                    style={{
+                      padding: '4px 8px',
+                      paddingRight: '24px',
+                      borderRadius: '6px',
+                      border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
+                      background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
+                      color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                      appearance: 'none',
+                      transition: 'border-color 0.15s',
+                      outline: 'none',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#3b82f6';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
+                    }}
+                  >
+                    <option value="desktop">💻 Desktop (768px)</option>
+                    <option value="tablet">📱 Tablet (640px)</option>
+                    <option value="mobile">📱 Mobile (375px)</option>
+                  </select>
+                  <span style={{
+                    position: 'absolute',
+                    right: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    pointerEvents: 'none',
+                    color: mockTheme === 'dark' ? '#aaa' : '#666',
+                    fontSize: '9px',
+                  }}>▼</span>
+                </div>
               </div>
 
               {/* Debug Mode Toggle */}
