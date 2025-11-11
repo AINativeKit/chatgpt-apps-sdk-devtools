@@ -476,6 +476,7 @@ export function DevContainer({
                       : 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'right 10px center',
+                    backgroundSize: '8px 6px',
                     transition: 'border-color 0.15s, box-shadow 0.15s',
                     outline: 'none',
                   }}
@@ -520,6 +521,7 @@ export function DevContainer({
                     : 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
                   backgroundRepeat: 'no-repeat',
                   backgroundPosition: 'right 10px center',
+                  backgroundSize: '8px 6px',
                   transition: 'border-color 0.15s, box-shadow 0.15s',
                   outline: 'none',
                 }}
@@ -820,6 +822,7 @@ export function DevContainer({
                       : 'url("data:image/svg+xml,%3Csvg width=\'8\' height=\'6\' viewBox=\'0 0 8 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L4 4.5L7 1.5\' stroke=\'%23666\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'right 6px center',
+                    backgroundSize: '8px 6px',
                     transition: 'border-color 0.15s',
                     outline: 'none',
                   }}
