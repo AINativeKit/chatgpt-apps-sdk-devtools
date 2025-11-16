@@ -47,6 +47,16 @@
   --ai-state-hover-opacity: 0.9;
   --ai-state-focus-outline: #0285ff;
 
+  /* Semantic State Colors - for UI feedback */
+  --ai-color-state-info: #0285ff;
+  --ai-color-state-info-bg: rgba(2, 133, 255, 0.1);
+  --ai-color-state-success: #008635;
+  --ai-color-state-success-bg: rgba(0, 134, 53, 0.1);
+  --ai-color-state-warning: #e25507;
+  --ai-color-state-warning-bg: rgba(226, 85, 7, 0.1);
+  --ai-color-state-error: #e02e2a;
+  --ai-color-state-error-bg: rgba(224, 46, 42, 0.1);
+
   /* Typography */
   --ai-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --ai-font-weight-normal: 400;
@@ -107,4 +117,14 @@
 
   /* State Colors */
   --ai-state-hover-background: rgba(255, 255, 255, 0.08);
+
+  /* Semantic State Colors - Dark Mode */
+  --ai-color-state-info: #0285ff;
+  --ai-color-state-info-bg: rgba(2, 133, 255, 0.15);
+  --ai-color-state-success: #40c977;
+  --ai-color-state-success-bg: rgba(64, 201, 119, 0.15);
+  --ai-color-state-warning: #ff9e6c;
+  --ai-color-state-warning-bg: rgba(255, 158, 108, 0.15);
+  --ai-color-state-error: #ff8583;
+  --ai-color-state-error-bg: rgba(255, 133, 131, 0.15);
 }
