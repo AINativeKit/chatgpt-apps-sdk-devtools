@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { SetGlobalsEvent, type OpenAiGlobals, type Theme } from '@ainativekit/ui';
+import { SetGlobalsEvent, ThemeProvider, type OpenAiGlobals, type Theme } from '@ainativekit/ui';
 import type { DevContainerProps, Widget } from '../types';
 import '../styles/devtools-theme.css';
 
@@ -52,10 +52,10 @@ class ErrorBoundary extends React.Component<
       return (
         <div style={{
           padding: '20px',
-          background: '#fee',
-          border: '1px solid #fcc',
-          borderRadius: '4px',
-          color: '#c00',
+          background: 'var(--ai-color-state-error-bg)',
+          border: '1px solid var(--ai-color-state-error)',
+          borderRadius: 'var(--ai-radius-sm)',
+          color: 'var(--ai-color-state-error)',
           fontFamily: 'monospace',
           fontSize: '14px'
         }}>
@@ -69,7 +69,7 @@ class ErrorBoundary extends React.Component<
               <pre style={{
                 marginTop: '10px',
                 padding: '10px',
-                background: '#fff',
+                background: 'var(--ai-color-bg-primary)',
                 overflow: 'auto'
               }}>
                 {this.state.error.toString()}
@@ -81,9 +81,9 @@ class ErrorBoundary extends React.Component<
             style={{
               marginTop: '10px',
               padding: '5px 10px',
-              background: '#fff',
-              border: '1px solid #ccc',
-              borderRadius: '3px',
+              background: 'var(--ai-color-bg-primary)',
+              border: '1px solid var(--ai-color-border-default)',
+              borderRadius: 'var(--ai-radius-sm)',
               cursor: 'pointer'
             }}
           >
@@ -115,6 +115,7 @@ export function DevContainer({
   theme: initialTheme = 'light',
   autoLoad = true,
   toolbarPosition = 'top',
+  brandColors,
 }: DevContainerProps) {
   // Normalize to multi-widget structure for consistent handling
   const normalizedWidgets = useMemo((): Widget[] => {
@@ -215,9 +216,8 @@ export function DevContainer({
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', mockTheme);
 
-    // Also set body background color
-    const bgColor = mockTheme === 'dark' ? '#1e1e1e' : '#ffffff';
-    document.body.style.backgroundColor = bgColor;
+    // Use design token for body background to match card backgrounds
+    document.body.style.backgroundColor = 'var(--ai-color-bg-primary)';
   }, [mockTheme]);
 
   // Set globals helper
@@ -400,15 +400,13 @@ export function DevContainer({
           [toolbarPosition]: 0,
           left: 0,
           right: 0,
-          background: mockTheme === 'dark'
-            ? 'linear-gradient(to bottom, rgba(30,30,30,0.98), rgba(20,20,20,0.98))'
-            : 'linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(250,250,250,0.98))',
+          background: 'var(--ai-color-bg-primary)',
           backdropFilter: 'blur(10px)',
           borderBottom: toolbarPosition === 'top'
-            ? mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)'
+            ? '1px solid var(--ai-color-border-default)'
             : 'none',
           borderTop: toolbarPosition === 'bottom'
-            ? mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)'
+            ? '1px solid var(--ai-color-border-default)'
             : 'none',
           padding: '12px 16px',
           zIndex: 9999,
@@ -416,12 +414,8 @@ export function DevContainer({
           flexDirection: 'column',
           gap: '10px',
           boxShadow: toolbarPosition === 'top'
-            ? mockTheme === 'dark'
-              ? '0 4px 12px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.4)'
-              : '0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.08)'
-            : mockTheme === 'dark'
-              ? '0 -4px 12px rgba(0,0,0,0.3), 0 -1px 3px rgba(0,0,0,0.4)'
-              : '0 -4px 12px rgba(0,0,0,0.05), 0 -1px 3px rgba(0,0,0,0.08)',
+            ? '0 4px 12px var(--ai-color-border-light), 0 1px 3px var(--ai-color-border-default)'
+            : '0 -4px 12px var(--ai-color-border-light), 0 -1px 3px var(--ai-color-border-default)',
         }}>
           {/* Main Controls */}
           <div style={{
@@ -436,14 +430,14 @@ export function DevContainer({
               alignItems: 'center',
               gap: '6px',
               paddingRight: '12px',
-              borderRight: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+              borderRight: '1px solid var(--ai-color-border-default)',
               marginRight: '4px',
             }}>
               <span style={{ fontSize: '16px' }}>⚡</span>
               <span style={{
                 fontWeight: '600',
                 fontSize: '13px',
-                color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
+                color: 'var(--ai-color-text-primary)',
                 letterSpacing: '-0.01em',
               }}>
                 Dev Tools
@@ -460,9 +454,9 @@ export function DevContainer({
                     padding: '5px 10px',
                     paddingRight: '28px',
                     borderRadius: '6px',
-                    border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
-                    background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
-                    color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
+                    border: '1px solid var(--ai-color-border-heavy)',
+                    background: 'var(--ai-color-bg-primary)',
+                    color: 'var(--ai-color-text-primary)',
                     fontSize: '13px',
                     fontWeight: '500',
                     cursor: 'pointer',
@@ -474,11 +468,11 @@ export function DevContainer({
                     outline: 'none',
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#3b82f6';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)';
+                    e.target.style.borderColor = 'var(--ai-color-state-info)';
+                    e.target.style.boxShadow = '0 0 0 3px var(--ai-color-state-info-bg)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
+                    e.target.style.borderColor = 'var(--ai-color-border-heavy)';
                     e.target.style.boxShadow = 'none';
                   }}
                 >
@@ -494,7 +488,7 @@ export function DevContainer({
                   top: '50%',
                   transform: 'translateY(-50%)',
                   pointerEvents: 'none',
-                  color: mockTheme === 'dark' ? '#aaa' : '#666',
+                  color: 'var(--ai-color-text-secondary)',
                   fontSize: '10px',
                 }}>▼</span>
               </div>
@@ -511,9 +505,9 @@ export function DevContainer({
                     padding: '5px 10px',
                     paddingRight: '28px',
                     borderRadius: '6px',
-                    border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
-                    background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
-                    color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
+                    border: '1px solid var(--ai-color-border-heavy)',
+                    background: 'var(--ai-color-bg-primary)',
+                    color: 'var(--ai-color-text-primary)',
                     fontSize: '13px',
                     fontWeight: '500',
                     cursor: 'pointer',
@@ -525,11 +519,11 @@ export function DevContainer({
                     outline: 'none',
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#3b82f6';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)';
+                    e.target.style.borderColor = 'var(--ai-color-state-info)';
+                    e.target.style.boxShadow = '0 0 0 3px var(--ai-color-state-info-bg)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
+                    e.target.style.borderColor = 'var(--ai-color-border-heavy)';
                     e.target.style.boxShadow = 'none';
                   }}
                 >
@@ -545,7 +539,7 @@ export function DevContainer({
                   top: '50%',
                   transform: 'translateY(-50%)',
                   pointerEvents: 'none',
-                  color: mockTheme === 'dark' ? '#aaa' : '#666',
+                  color: 'var(--ai-color-text-secondary)',
                   fontSize: '10px',
                 }}>▼</span>
               </div>
@@ -555,7 +549,7 @@ export function DevContainer({
             <div style={{
               width: '1px',
               height: '20px',
-              background: mockTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+              background: 'var(--ai-color-border-default)',
               margin: '0 4px',
             }} />
 
@@ -563,7 +557,7 @@ export function DevContainer({
             <div style={{
               display: 'flex',
               gap: '4px',
-              background: mockTheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+              background: 'var(--ai-color-border-light)',
               padding: '3px',
               borderRadius: '8px',
             }}>
@@ -574,8 +568,8 @@ export function DevContainer({
                   padding: '5px 12px',
                   borderRadius: '5px',
                   border: 'none',
-                  background: widgetState === 'loading' ? '#3b82f6' : 'transparent',
-                  color: widgetState === 'loading' ? 'white' : (mockTheme === 'dark' ? '#aaa' : '#555'),
+                  background: widgetState === 'loading' ? 'var(--ai-color-state-info)' : 'transparent',
+                  color: widgetState === 'loading' ? 'var(--ai-color-brand-on-primary)' : 'var(--ai-color-text-secondary)',
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: widgetState === 'loading' && !isLoading ? 'default' : 'pointer',
@@ -584,14 +578,14 @@ export function DevContainer({
                 }}
                 onMouseEnter={(e) => {
                   if (widgetState !== 'loading' && !e.currentTarget.disabled) {
-                    e.currentTarget.style.background = 'rgba(59,130,246,0.1)';
-                    e.currentTarget.style.color = '#3b82f6';
+                    e.currentTarget.style.background = 'var(--ai-color-state-info-bg)';
+                    e.currentTarget.style.color = 'var(--ai-color-state-info)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (widgetState !== 'loading') {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
+                    e.currentTarget.style.color = 'var(--ai-color-text-secondary)';
                   }
                 }}
               >
@@ -604,8 +598,8 @@ export function DevContainer({
                   padding: '5px 12px',
                   borderRadius: '5px',
                   border: 'none',
-                  background: widgetState === 'data' && !isLoading ? '#10b981' : 'transparent',
-                  color: widgetState === 'data' && !isLoading ? 'white' : (mockTheme === 'dark' ? '#aaa' : '#555'),
+                  background: widgetState === 'data' && !isLoading ? 'var(--ai-color-state-success)' : 'transparent',
+                  color: widgetState === 'data' && !isLoading ? 'var(--ai-color-brand-on-primary)' : 'var(--ai-color-text-secondary)',
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: isLoading ? 'default' : 'pointer',
@@ -614,14 +608,14 @@ export function DevContainer({
                 }}
                 onMouseEnter={(e) => {
                   if (widgetState !== 'data' && !e.currentTarget.disabled) {
-                    e.currentTarget.style.background = 'rgba(16,185,129,0.1)';
-                    e.currentTarget.style.color = '#10b981';
+                    e.currentTarget.style.background = 'var(--ai-color-state-success-bg)';
+                    e.currentTarget.style.color = 'var(--ai-color-state-success)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (widgetState !== 'data' || isLoading) {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
+                    e.currentTarget.style.color = 'var(--ai-color-text-secondary)';
                   }
                 }}
               >
@@ -635,7 +629,7 @@ export function DevContainer({
                   borderRadius: '5px',
                   border: 'none',
                   background: 'transparent',
-                  color: mockTheme === 'dark' ? '#aaa' : '#555',
+                  color: 'var(--ai-color-text-secondary)',
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: isLoading ? 'default' : 'pointer',
@@ -644,13 +638,13 @@ export function DevContainer({
                 }}
                 onMouseEnter={(e) => {
                   if (!e.currentTarget.disabled) {
-                    e.currentTarget.style.background = 'rgba(16,185,129,0.1)';
-                    e.currentTarget.style.color = '#10b981';
+                    e.currentTarget.style.background = 'var(--ai-color-state-success-bg)';
+                    e.currentTarget.style.color = 'var(--ai-color-state-success)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
+                  e.currentTarget.style.color = 'var(--ai-color-text-secondary)';
                 }}
               >
                 ⏱️ Delayed
@@ -662,8 +656,8 @@ export function DevContainer({
                   padding: '5px 12px',
                   borderRadius: '5px',
                   border: 'none',
-                  background: widgetState === 'empty' ? '#f59e0b' : 'transparent',
-                  color: widgetState === 'empty' ? 'white' : '#555',
+                  background: widgetState === 'empty' ? 'var(--ai-color-state-warning)' : 'transparent',
+                  color: widgetState === 'empty' ? 'var(--ai-color-brand-on-primary)' : 'var(--ai-color-text-secondary)',
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: isLoading ? 'default' : 'pointer',
@@ -672,14 +666,14 @@ export function DevContainer({
                 }}
                 onMouseEnter={(e) => {
                   if (widgetState !== 'empty' && !e.currentTarget.disabled) {
-                    e.currentTarget.style.background = 'rgba(245,158,11,0.1)';
-                    e.currentTarget.style.color = '#f59e0b';
+                    e.currentTarget.style.background = 'var(--ai-color-state-warning-bg)';
+                    e.currentTarget.style.color = 'var(--ai-color-state-warning)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (widgetState !== 'empty') {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
+                    e.currentTarget.style.color = 'var(--ai-color-text-secondary)';
                   }
                 }}
               >
@@ -692,8 +686,8 @@ export function DevContainer({
                   padding: '5px 12px',
                   borderRadius: '5px',
                   border: 'none',
-                  background: widgetState === 'error' ? '#ef4444' : 'transparent',
-                  color: widgetState === 'error' ? 'white' : '#555',
+                  background: widgetState === 'error' ? 'var(--ai-color-state-error)' : 'transparent',
+                  color: widgetState === 'error' ? 'var(--ai-color-brand-on-primary)' : 'var(--ai-color-text-secondary)',
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: isLoading ? 'default' : 'pointer',
@@ -702,14 +696,14 @@ export function DevContainer({
                 }}
                 onMouseEnter={(e) => {
                   if (widgetState !== 'error' && !e.currentTarget.disabled) {
-                    e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
-                    e.currentTarget.style.color = '#ef4444';
+                    e.currentTarget.style.background = 'var(--ai-color-state-error-bg)';
+                    e.currentTarget.style.color = 'var(--ai-color-state-error)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (widgetState !== 'error') {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#555';
+                    e.currentTarget.style.color = 'var(--ai-color-text-secondary)';
                   }
                 }}
               >
@@ -721,7 +715,7 @@ export function DevContainer({
             <div style={{
               width: '1px',
               height: '20px',
-              background: mockTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+              background: 'var(--ai-color-border-default)',
               margin: '0 4px',
             }} />
 
@@ -732,8 +726,8 @@ export function DevContainer({
               style={{
                 padding: '6px 10px',
                 borderRadius: '6px',
-                border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
-                background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
+                border: '1px solid var(--ai-color-border-heavy)',
+                background: 'var(--ai-color-bg-primary)',
                 fontSize: '14px',
                 cursor: 'pointer',
                 transition: 'all 0.15s',
@@ -742,12 +736,12 @@ export function DevContainer({
                 gap: '4px',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = mockTheme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)';
-                e.currentTarget.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)';
+                e.currentTarget.style.background = 'var(--ai-state-hover-background)';
+                e.currentTarget.style.borderColor = 'var(--ai-color-border-heavy)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = mockTheme === 'dark' ? '#2a2a2a' : 'white';
-                e.currentTarget.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
+                e.currentTarget.style.background = 'var(--ai-color-bg-primary)';
+                e.currentTarget.style.borderColor = 'var(--ai-color-border-heavy)';
               }}
             >
               {mockTheme === 'light' ? '🌙' : '☀️'}
@@ -763,8 +757,8 @@ export function DevContainer({
                 padding: '6px 12px',
                 borderRadius: '6px',
                 border: 'none',
-                background: showAdvancedSettings ? 'rgba(59,130,246,0.1)' : 'transparent',
-                color: showAdvancedSettings ? '#3b82f6' : (mockTheme === 'dark' ? '#aaa' : '#666'),
+                background: showAdvancedSettings ? 'var(--ai-color-state-info-bg)' : 'transparent',
+                color: showAdvancedSettings ? 'var(--ai-color-state-info)' : 'var(--ai-color-text-secondary)',
                 fontSize: '12px',
                 fontWeight: '500',
                 cursor: 'pointer',
@@ -774,13 +768,13 @@ export function DevContainer({
                 gap: '4px',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(59,130,246,0.1)';
-                e.currentTarget.style.color = '#3b82f6';
+                e.currentTarget.style.background = 'var(--ai-color-state-info-bg)';
+                e.currentTarget.style.color = 'var(--ai-color-state-info)';
               }}
               onMouseLeave={(e) => {
                 if (!showAdvancedSettings) {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = mockTheme === 'dark' ? '#aaa' : '#666';
+                  e.currentTarget.style.color = 'var(--ai-color-text-secondary)';
                 }
               }}
             >
@@ -803,7 +797,7 @@ export function DevContainer({
               gap: '12px',
               flexWrap: 'wrap',
               paddingTop: '8px',
-              borderTop: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
+              borderTop: '1px solid var(--ai-color-border-light)',
             }}>
               {/* Device Type */}
               <div style={{
@@ -811,7 +805,7 @@ export function DevContainer({
                 alignItems: 'center',
                 gap: '6px',
               }}>
-                <span style={{ fontSize: '12px', color: mockTheme === 'dark' ? '#aaa' : '#666', fontWeight: '500' }}>Device:</span>
+                <span style={{ fontSize: '12px', color: 'var(--ai-color-text-secondary)', fontWeight: '500' }}>Device:</span>
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                   <select
                     value={deviceType}
@@ -820,9 +814,9 @@ export function DevContainer({
                       padding: '4px 8px',
                       paddingRight: '24px',
                       borderRadius: '6px',
-                      border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
-                      background: mockTheme === 'dark' ? '#2a2a2a' : 'white',
-                      color: mockTheme === 'dark' ? '#e5e5e5' : '#333',
+                      border: '1px solid var(--ai-color-border-heavy)',
+                      background: 'var(--ai-color-bg-primary)',
+                      color: 'var(--ai-color-text-primary)',
                       fontSize: '12px',
                       fontWeight: '500',
                       cursor: 'pointer',
@@ -833,10 +827,10 @@ export function DevContainer({
                       outline: 'none',
                     }}
                     onFocus={(e) => {
-                      e.target.style.borderColor = '#3b82f6';
+                      e.target.style.borderColor = 'var(--ai-color-state-info)';
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
+                      e.target.style.borderColor = 'var(--ai-color-border-heavy)';
                     }}
                   >
                     <option value="desktop">💻 Desktop (768px)</option>
@@ -849,7 +843,7 @@ export function DevContainer({
                     top: '50%',
                     transform: 'translateY(-50%)',
                     pointerEvents: 'none',
-                    color: mockTheme === 'dark' ? '#aaa' : '#666',
+                    color: 'var(--ai-color-text-secondary)',
                     fontSize: '9px',
                   }}>▼</span>
                 </div>
@@ -863,9 +857,9 @@ export function DevContainer({
                   padding: '4px 10px',
                   borderRadius: '6px',
                   border: '1px solid',
-                  borderColor: debugMode === 'border' ? '#ef4444' : (mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'),
-                  background: debugMode === 'border' ? 'rgba(239,68,68,0.1)' : (mockTheme === 'dark' ? '#2a2a2a' : 'white'),
-                  color: debugMode === 'border' ? '#ef4444' : (mockTheme === 'dark' ? '#aaa' : '#666'),
+                  borderColor: debugMode === 'border' ? 'var(--ai-color-state-error)' : 'var(--ai-color-border-heavy)',
+                  background: debugMode === 'border' ? 'var(--ai-color-state-error-bg)' : 'var(--ai-color-bg-primary)',
+                  color: debugMode === 'border' ? 'var(--ai-color-state-error)' : 'var(--ai-color-text-secondary)',
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: 'pointer',
@@ -873,14 +867,14 @@ export function DevContainer({
                 }}
                 onMouseEnter={(e) => {
                   if (debugMode !== 'border') {
-                    e.currentTarget.style.borderColor = '#ef4444';
-                    e.currentTarget.style.background = 'rgba(239,68,68,0.05)';
+                    e.currentTarget.style.borderColor = 'var(--ai-color-state-error)';
+                    e.currentTarget.style.background = 'var(--ai-color-state-error-bg)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (debugMode !== 'border') {
-                    e.currentTarget.style.borderColor = mockTheme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
-                    e.currentTarget.style.background = mockTheme === 'dark' ? '#2a2a2a' : 'white';
+                    e.currentTarget.style.borderColor = 'var(--ai-color-border-heavy)';
+                    e.currentTarget.style.background = 'var(--ai-color-bg-primary)';
                   }
                 }}
               >
@@ -899,8 +893,8 @@ export function DevContainer({
                 <span style={{
                   padding: '3px 10px',
                   borderRadius: '12px',
-                  background: 'rgba(59,130,246,0.1)',
-                  color: '#3b82f6',
+                  background: 'var(--ai-color-state-info-bg)',
+                  color: 'var(--ai-color-state-info)',
                   fontSize: '11px',
                   fontWeight: '600',
                   letterSpacing: '0.02em',
@@ -910,19 +904,19 @@ export function DevContainer({
                 <span style={{
                   padding: '3px 10px',
                   borderRadius: '12px',
-                  background: mockTheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)',
-                  color: mockTheme === 'dark' ? '#aaa' : '#666',
+                  background: 'var(--ai-color-border-light)',
+                  color: 'var(--ai-color-text-secondary)',
                   fontSize: '11px',
                   fontWeight: '600',
-                  border: mockTheme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)',
+                  border: '1px solid var(--ai-color-border-light)',
                 }}>
                   {mockTheme === 'dark' ? '🌙' : '☀️'} {mockTheme.toUpperCase()}
                 </span>
                 <span style={{
                   padding: '3px 10px',
                   borderRadius: '12px',
-                  background: mockTheme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                  color: mockTheme === 'dark' ? '#aaa' : '#666',
+                  background: 'var(--ai-state-hover-background)',
+                  color: 'var(--ai-color-text-secondary)',
                   fontSize: '11px',
                   fontWeight: '600',
                 }}>
@@ -952,7 +946,9 @@ export function DevContainer({
           overflowX: 'hidden',
         }}>
           <ErrorBoundary>
-            <ActiveComponent />
+            <ThemeProvider brandColors={brandColors}>
+              <ActiveComponent />
+            </ThemeProvider>
           </ErrorBoundary>
 
           {/* Debug Border */}

@@ -112,7 +112,7 @@ export function WidgetPortal({
           style={{
             backgroundColor: 'var(--ai-color-bg-secondary)',
             borderBottom: '1px solid var(--ai-color-border-default)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            boxShadow: '0 1px 3px var(--ai-color-border-default)',
           }}
         >
           <div
