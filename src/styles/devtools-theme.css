@@ -128,3 +128,10 @@
   --ai-color-state-error: #ff8583;
   --ai-color-state-error-bg: rgba(255, 133, 131, 0.15);
 }
+
+/* Apply font-family to body */
+body {
+  font-family: var(--ai-font-family);
+  margin: 0;
+  padding: 0;
+}
