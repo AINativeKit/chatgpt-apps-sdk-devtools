@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2025-12-29
+
+### Stable Release
+First stable release of @ainativekit/devtools, aligned with @ainativekit/ui v1.0.0.
+
+### Added
+- **Widget-specific data loaders** - Each widget can now define its own data loader
+  - `dataLoader` and `emptyDataLoader` props on Widget type
+  - Auto-reload data when switching to widgets with their own loaders
+  - Hide global data loader dropdown when widget has its own loader
+- **Beautiful example widgets** - 4 production-ready example widgets
+  - Pizza Carousel - SummaryCard with compact mode
+  - Pizza Map - Interactive map with fullscreen support
+  - Pizza List - Ranked list with interactive selection
+  - Photo Albums - Album carousel with fullscreen viewer
+
+### Changed
+- **@ainativekit/ui peer dependency** - Updated to ^1.0.0
+- **Toolbar positioning** - Changed from fixed to static positioning
+  - Toolbar no longer floats over content
+  - Removed `toolbarPosition` prop (always at top)
+  - Better compatibility with fullscreen components
+
+### Fixed
+- Fullscreen map mode no longer blocked by floating toolbar
+- Removed unused wrapper div in content area
+
+### Examples
+- Tailwind v4 configured for basic example
+- Widgets example showcases @ainativekit/ui v1.0.0 components
+- All widgets use widget-specific data loaders pattern
+
 ## [0.3.0] - 2025-11-11
 
 ### Major Improvements
@@ -121,7 +153,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Architecture principles
 - MIT License
 
-[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.3.0...v1.0.0
 [0.3.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/releases/tag/v0.1.0

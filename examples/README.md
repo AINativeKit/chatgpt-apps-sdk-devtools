@@ -15,41 +15,33 @@ import { DevContainer } from '@ainativekit/devtools';
 </DevContainer>
 ```
 
-### 2. Widgets Example (`/widgets`) (v0.2.0+)
-Demonstrates multi-widget development in a single dev server.
+### 2. Widgets Example (`/widgets`) (v1.0.0+)
+Demonstrates multi-widget development with widget-specific data loaders. Showcases 4 beautiful example widgets using @ainativekit/ui v1.0.0 components.
 
 ```tsx
 <DevContainer
   widgets={[
-    { id: 'carousel', name: 'Carousel', component: CarouselWidget },
-    { id: 'map', name: 'Map', component: MapWidget },
-    { id: 'search', name: 'Search', component: SearchWidget }
+    { id: 'carousel', name: 'Pizza Carousel', component: CarouselWidget, dataLoader: () => carouselData },
+    { id: 'map', name: 'Pizza Map', component: MapWidget, dataLoader: () => mapData },
+    { id: 'list', name: 'Pizza List', component: ListWidget, dataLoader: () => listData },
+    { id: 'album', name: 'Photo Albums', component: AlbumWidget, dataLoader: () => albumData }
   ]}
-  dataLoaders={{ restaurants: () => mockData }}
   defaultWidget="carousel"
 />
 ```
 
+**Widgets included:**
+- **Pizza Carousel** - SummaryCard with compact mode, horizontal scrolling
+- **Pizza Map** - Interactive Leaflet map with fullscreen support
+- **Pizza List** - Ranked list with interactive selection
+- **Photo Albums** - Album carousel with fullscreen photo viewer
+
 **Features:**
+- Widget-specific data loaders (no more shared loaders complexity)
 - Widget switching with dropdown selector
 - URL parameter support (`?widget=map`)
-- Multiple data sources
+- Auto-reload data when switching widgets
 - Persistent widget selection
-- createMockData utility usage
-
-### 3. Advanced Example (`/advanced`)
-Demonstrates advanced features like custom data loaders, empty states, and error handling.
-
-```tsx
-<DevContainer
-  loadingDelay={3000}
-  dataLoader={fetchMockData}
-  emptyDataLoader={getEmptyState}
-  theme="dark"
->
-  <ComplexWidget />
-</DevContainer>
-```
 
 ## 🚀 Running Examples
 

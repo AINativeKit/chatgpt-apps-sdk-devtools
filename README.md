@@ -27,9 +27,9 @@ A powerful, zero-configuration development environment for building ChatGPT apps
 
 ### Optional Dependencies
 
-- **@ainativekit/ui** 0.10.0 or higher (optional, but recommended for enhanced theming)
+- **@ainativekit/ui** 1.0.0 or higher (optional, but recommended for enhanced theming)
   - DevTools includes basic theme support out of the box
-  - For full design system integration, install `@ainativekit/ui` and use `ThemeProvider`
+  - For full design system integration, install `@ainativekit/ui` and use `AppsSDKUIProvider`
   - See usage examples below for both standalone and integrated approaches
 
 ## 📦 Installation
@@ -108,59 +108,67 @@ root.render(
 </DevContainer>
 ```
 
-### Multiple Widgets (v0.2.0+)
+### Multiple Widgets with Widget-Specific Data Loaders (v1.0.0+)
 
-DevContainer automatically detects when you have multiple widgets and shows a selector:
+DevContainer automatically detects when you have multiple widgets and shows a selector. Each widget can have its own data loader:
 
 ```typescript
-import { DevContainer, createMockData } from '@ainativekit/devtools';
+import { DevContainer } from '@ainativekit/devtools';
+import { AppsSDKUIProvider } from '@ainativekit/ui';
 import CarouselWidget from './widgets/CarouselWidget';
 import MapWidget from './widgets/MapWidget';
-import SearchWidget from './widgets/SearchWidget';
-
-// Create mock data with automatic empty states
-const restaurantData = createMockData(
-  { restaurants: [...], totalResults: 9 },
-  {
-    emptyTransform: (data) => ({
-      ...data,
-      restaurants: [],
-      totalResults: 0
-    })
-  }
-);
+import ListWidget from './widgets/ListWidget';
+import AlbumWidget from './widgets/AlbumWidget';
 
 function App() {
   return (
-    <DevContainer
-      widgets={[
-        { id: 'carousel', name: 'Restaurant Carousel', component: CarouselWidget },
-        { id: 'map', name: 'Location Map', component: MapWidget },
-        { id: 'search', name: 'Search Results', component: SearchWidget }
-      ]}
-      dataLoaders={{
-        restaurants: () => restaurantData.full,
-        locations: () => ({ lat: 40.7128, lng: -74.0060 })
-      }}
-      emptyDataLoaders={{
-        restaurants: () => restaurantData.empty
-      }}
-      defaultWidget="carousel"
-      loadingDelay={2000}
-      theme="light"
-    />
+    <AppsSDKUIProvider linkComponent="a">
+      <DevContainer
+        widgets={[
+          {
+            id: 'carousel',
+            name: 'Pizza Carousel',
+            component: CarouselWidget,
+            dataLoader: () => carouselData,
+            emptyDataLoader: () => emptyCarouselData
+          },
+          {
+            id: 'map',
+            name: 'Pizza Map',
+            component: MapWidget,
+            dataLoader: () => mapData
+          },
+          {
+            id: 'list',
+            name: 'Pizza List',
+            component: ListWidget,
+            dataLoader: () => listData,
+            emptyDataLoader: () => emptyListData
+          },
+          {
+            id: 'album',
+            name: 'Photo Albums',
+            component: AlbumWidget,
+            dataLoader: () => albumData
+          }
+        ]}
+        loadingDelay={1500}
+        theme="light"
+        autoLoad={true}
+        defaultWidget="carousel"
+      />
+    </AppsSDKUIProvider>
   );
 }
 ```
 
-> **Note:** Wrap with `<ThemeProvider>` from `@ainativekit/ui` for enhanced theming support.
-
 **Features:**
 - Single dev server for all widgets
+- Widget-specific data loaders (v1.0.0+)
 - Automatic widget selector (only shows when multiple widgets)
 - URL support (`?widget=map`) for deep linking
 - Persistent widget selection
-- Shared data loaders across widgets
+- Auto-reload data when switching widgets
 
 ## 📖 API Reference
 
@@ -177,10 +185,19 @@ function App() {
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `widgets` | `Widget[]` | - | Array of widget configurations |
-| `dataLoaders` | `Record<string, Function>` | `{}` | Map of data loader functions |
-| `emptyDataLoaders` | `Record<string, Function>` | `{}` | Map of empty data loader functions |
+| `dataLoaders` | `Record<string, Function>` | `{}` | Map of global data loader functions |
+| `emptyDataLoaders` | `Record<string, Function>` | `{}` | Map of global empty data loader functions |
 | `defaultDataLoader` | `string` | - | Key for default data loader |
 | `defaultWidget` | `string` | - | ID of default widget to show |
+
+#### Widget Type (v1.0.0+)
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier for the widget |
+| `name` | `string` | Yes | Display name for the widget selector |
+| `component` | `React.ComponentType` | Yes | The widget component |
+| `dataLoader` | `() => Promise<any> \| any` | No | Widget-specific data loader |
+| `emptyDataLoader` | `() => Promise<any> \| any` | No | Widget-specific empty state data loader |
 
 #### Common Props
 | Prop | Type | Default | Description |
@@ -188,7 +205,6 @@ function App() {
 | `loadingDelay` | `number` | `2000` | Delay (ms) before loading data |
 | `theme` | `'light' \| 'dark'` | `'light'` | Initial theme |
 | `autoLoad` | `boolean` | `true` | Auto-load data on mount |
-| `toolbarPosition` | `'top' \| 'bottom'` | `'top'` | Toolbar position |
 
 ### createMockData
 

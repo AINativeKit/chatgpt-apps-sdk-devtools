@@ -115,4 +115,4 @@ export { VIEWPORT_PRESETS } from './types';
  * Current version of @ainativekit/devtools
  * @constant
  */
-export const VERSION = '0.2.0';
+export const VERSION = '1.0.0';
