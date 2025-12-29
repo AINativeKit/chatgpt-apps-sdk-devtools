@@ -2,7 +2,7 @@
  * ScenarioPicker - UI component for selecting mock data scenarios
  */
 
-import { Chip } from '@ainativekit/ui';
+import { Badge } from '@ainativekit/ui';
 import type { Scenario } from '../mock';
 
 export interface ScenarioPickerProps {
@@ -46,16 +46,27 @@ export function ScenarioPicker({
         const hasDelay = (scenario.delay ?? 0) > 0;
 
         return (
-          <Chip
+          <button
             key={`${scenario.name}-${index}`}
-            selected={isSelected}
             onClick={() => onSelectScenario(scenario)}
             disabled={isLoading}
             title={scenario.description || scenario.name}
+            style={{
+              border: 'none',
+              background: 'none',
+              padding: 0,
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              opacity: isLoading ? 0.5 : 1,
+            }}
           >
-            {isLoading && isSelected && hasDelay ? '⏳ ' : ''}
-            {scenario.name}
-          </Chip>
+            <Badge
+              color={isSelected ? 'primary' : 'secondary'}
+              variant={isSelected ? 'solid' : 'outline'}
+            >
+              {isLoading && isSelected && hasDelay ? '⏳ ' : ''}
+              {scenario.name}
+            </Badge>
+          </button>
         );
       })}
     </div>

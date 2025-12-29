@@ -1,79 +1,69 @@
 import React from 'react';
-import { useGlobals } from '@ainativekit/ui';
+import { useOpenAiGlobal, Skeleton, Alert, Button, Card } from '@ainativekit/ui';
 
 /**
  * Example ChatGPT Widget
  * This demonstrates how to build a widget that works with @ainativekit/devtools
+ * using the new OpenAI Apps SDK UI components and design tokens.
  */
 function App() {
-  const { globals } = useGlobals();
-  const { toolOutput, theme } = globals || {};
+  const toolOutput = useOpenAiGlobal('toolOutput');
+  const theme = useOpenAiGlobal('theme');
 
-  // Show loading state
+  // Show loading state using Skeleton
   if (!toolOutput) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <h2>Loading...</h2>
-        <p>Waiting for data from DevContainer...</p>
+      <div className="p-5 flex flex-col gap-4">
+        <Skeleton width="60%" height={32} />
+        <Skeleton width="100%" height={20} />
+        <Skeleton width="80%" height={20} />
+        <Skeleton width="100%" height={120} />
+        <Skeleton width="100%" height={120} />
       </div>
     );
   }
 
-  // Show error state
+  // Show error state using Alert
   if (toolOutput.error) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center', color: 'red' }}>
-        <h2>Error</h2>
-        <p>{toolOutput.error}</p>
+      <div className="p-5">
+        <Alert color="danger" variant="soft" title="Error" description={toolOutput.error} />
       </div>
     );
   }
 
-  // Show data
+  // Show data using Card and Button with design tokens
   return (
-    <div style={{
-      padding: '20px',
-      backgroundColor: theme === 'dark' ? '#1a1a1a' : '#ffffff',
-      color: theme === 'dark' ? '#ffffff' : '#000000',
-      minHeight: '400px',
-      borderRadius: '8px',
-      margin: '20px',
-    }}>
-      <h1>Example ChatGPT Widget</h1>
-      <p>This widget is wrapped with @ainativekit/devtools for development.</p>
+    <Card className="m-5">
+      <h1 className="text-2xl font-semibold text-[var(--color-text-primary)]">
+        Example ChatGPT Widget
+      </h1>
+      <p className="text-[var(--color-text-secondary)] mt-2">
+        This widget is wrapped with @ainativekit/devtools for development.
+      </p>
 
-      <div style={{
-        marginTop: '20px',
-        padding: '15px',
-        backgroundColor: theme === 'dark' ? '#2a2a2a' : '#f5f5f5',
-        borderRadius: '4px',
-      }}>
-        <h3>Current State:</h3>
-        <ul>
-          <li>Theme: <strong>{theme}</strong></li>
-          <li>Data Type: <strong>{toolOutput.type || 'default'}</strong></li>
-          <li>Timestamp: <strong>{toolOutput.timestamp || 'N/A'}</strong></li>
+      <Card elevation={1} className="mt-5">
+        <h3 className="text-lg font-medium text-[var(--color-text-primary)] mb-3">
+          Current State:
+        </h3>
+        <ul className="list-disc list-inside text-[var(--color-text-secondary)] space-y-1">
+          <li>Theme: <strong className="text-[var(--color-text-primary)]">{theme}</strong></li>
+          <li>Data Type: <strong className="text-[var(--color-text-primary)]">{toolOutput.type || 'default'}</strong></li>
+          <li>Timestamp: <strong className="text-[var(--color-text-primary)]">{toolOutput.timestamp || 'N/A'}</strong></li>
         </ul>
-      </div>
+      </Card>
 
-      <div style={{
-        marginTop: '20px',
-        padding: '15px',
-        backgroundColor: theme === 'dark' ? '#2a2a2a' : '#f5f5f5',
-        borderRadius: '4px',
-      }}>
-        <h3>Tool Output:</h3>
-        <pre style={{
-          fontSize: '12px',
-          overflow: 'auto',
-          maxHeight: '200px',
-        }}>
+      <Card elevation={1} className="mt-5">
+        <h3 className="text-lg font-medium text-[var(--color-text-primary)] mb-3">
+          Tool Output:
+        </h3>
+        <pre className="text-xs overflow-auto max-h-[200px] p-3 rounded-md bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)]">
           {JSON.stringify(toolOutput, null, 2)}
         </pre>
-      </div>
+      </Card>
 
-      <div style={{ marginTop: '20px' }}>
-        <button
+      <div className="mt-5">
+        <Button
           onClick={() => {
             if (window.openai?.sendFollowUpMessage) {
               window.openai.sendFollowUpMessage({
@@ -81,19 +71,11 @@ function App() {
               });
             }
           }}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: theme === 'dark' ? '#4a4a4a' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
         >
           Test OpenAI API
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 }
 

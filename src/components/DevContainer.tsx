@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { SetGlobalsEvent, ThemeProvider, type OpenAiGlobals, type Theme } from '@ainativekit/ui';
+import { SetGlobalsEvent, AppsSDKUIProvider, type OpenAiGlobals, type Theme } from '@ainativekit/ui';
 import type { DevContainerProps, Widget } from '../types';
 import '../styles/devtools-theme.css';
 
@@ -115,7 +115,6 @@ export function DevContainer({
   theme: initialTheme = 'light',
   autoLoad = true,
   toolbarPosition = 'top',
-  brandColors,
 }: DevContainerProps) {
   // Normalize to multi-widget structure for consistent handling
   const normalizedWidgets = useMemo((): Widget[] => {
@@ -946,9 +945,9 @@ export function DevContainer({
           overflowX: 'hidden',
         }}>
           <ErrorBoundary>
-            <ThemeProvider brandColors={brandColors}>
+            <AppsSDKUIProvider linkComponent="a">
               <ActiveComponent />
-            </ThemeProvider>
+            </AppsSDKUIProvider>
           </ErrorBoundary>
 
           {/* Debug Border */}

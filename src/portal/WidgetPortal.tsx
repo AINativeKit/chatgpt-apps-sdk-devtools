@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { ThemeProvider } from '@ainativekit/ui';
+import { AppsSDKUIProvider } from '@ainativekit/ui';
 import { DevContainer } from '../components/DevContainer';
 import { ScenarioPicker } from './ScenarioPicker';
 import type { WidgetPortalProps } from './types';
@@ -105,7 +105,7 @@ export function WidgetPortal({
   const WidgetComponent = currentWidget.component;
 
   return (
-    <ThemeProvider>
+    <AppsSDKUIProvider linkComponent="a">
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         {/* Widget Portal Header - Non-overlapping with proper spacing */}
         <div
@@ -238,6 +238,6 @@ export function WidgetPortal({
           </DevContainer>
         </div>
       </div>
-    </ThemeProvider>
+    </AppsSDKUIProvider>
   );
 }

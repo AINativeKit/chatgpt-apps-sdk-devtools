@@ -2,7 +2,7 @@
  * @ainativekit/devtools - Type definitions
  */
 
-import type { Theme, BrandColorConfig } from '@ainativekit/ui';
+import type { Theme } from '@ainativekit/ui';
 
 /**
  * Widget configuration for multi-widget development
@@ -108,19 +108,6 @@ export interface DevContainerProps {
    * @default 'top'
    */
   toolbarPosition?: 'top' | 'bottom';
-
-  /**
-   * Custom brand colors to apply to widgets
-   * Supports light/dark mode variants
-   * @example
-   * ```typescript
-   * brandColors: {
-   *   primary: { light: '#137044', dark: '#71D19E' },
-   *   success: '#10b981'
-   * }
-   * ```
-   */
-  brandColors?: BrandColorConfig;
 }
 
 /**

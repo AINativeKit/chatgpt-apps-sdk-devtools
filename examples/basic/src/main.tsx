@@ -1,8 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ThemeProvider } from '@ainativekit/ui';
+import { AppsSDKUIProvider } from '@ainativekit/ui';
 import { DevContainer } from '@ainativekit/devtools';
 import App from './App';
+
+// Import styles - order matters!
+// 1. Polyfill tokens + app styles (MUST come first to define --radius-* etc)
+import './index.css';
+// 2. OpenAI Apps SDK UI styles
+import '@openai/apps-sdk-ui/css';
+// 3. AINativeKit UI styles (extensions)
+import '@ainativekit/ui/styles';
 
 // Example mock data
 const mockData = {
@@ -22,17 +30,16 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
+    <AppsSDKUIProvider linkComponent="a">
       <DevContainer
         dataLoader={() => mockData}
         loadingDelay={2000}
         theme="light"
         autoLoad={true}
-        showDevTools={true}
         toolbarPosition="top"
       >
         <App />
       </DevContainer>
-    </ThemeProvider>
+    </AppsSDKUIProvider>
   </React.StrictMode>
 );
