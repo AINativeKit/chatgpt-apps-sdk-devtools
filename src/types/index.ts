@@ -14,6 +14,10 @@ export interface Widget {
   name: string;
   /** The widget component */
   component: React.ComponentType;
+  /** Widget-specific data loader (optional) */
+  dataLoader?: () => Promise<any> | any;
+  /** Widget-specific empty data loader (optional) */
+  emptyDataLoader?: () => Promise<any> | any;
 }
 
 /**
@@ -102,12 +106,6 @@ export interface DevContainerProps {
    * @default true
    */
   autoLoad?: boolean;
-
-  /**
-   * Toolbar position
-   * @default 'top'
-   */
-  toolbarPosition?: 'top' | 'bottom';
 }
 
 /**

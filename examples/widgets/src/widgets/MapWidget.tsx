@@ -1,91 +1,118 @@
-import React from 'react';
-import { useGlobals } from '@ainativekit/ui';
+import { useState } from 'react';
+import { useOpenAiGlobal, Map, FullscreenMap, Skeleton, Alert, type LocationData } from '@ainativekit/ui';
+
+interface MapData {
+  type: string;
+  locations?: LocationData[];
+  center?: { lat: number; lng: number };
+  zoom?: number;
+  message?: string;
+  error?: string;
+}
 
 function MapWidget() {
-  const globals = useGlobals();
-  const data = globals?.toolOutput;
+  const toolOutput = useOpenAiGlobal('toolOutput') as MapData | null;
+  const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  if (!data || !data.center) {
-    return <div>Loading map...</div>;
+  // Loading state
+  if (!toolOutput) {
+    return (
+      <div className="p-5">
+        <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">
+          Pizza Map
+        </h2>
+        <Skeleton width="100%" height={400} />
+      </div>
+    );
+  }
+
+  // Error state
+  if (toolOutput.error) {
+    return (
+      <div className="p-5">
+        <Alert color="danger" variant="soft" title="Error" description={toolOutput.error} />
+      </div>
+    );
+  }
+
+  // Empty state
+  if (!toolOutput.locations?.length) {
+    return (
+      <div className="p-5">
+        <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">
+          Pizza Map
+        </h2>
+        <Alert
+          color="info"
+          variant="soft"
+          title="No Locations"
+          description={toolOutput.message || 'No locations to display'}
+        />
+      </div>
+    );
+  }
+
+  const { locations, center, zoom } = toolOutput;
+  const defaultCenter: [number, number] = center ? [center.lat, center.lng] : [37.7749, -122.4194];
+
+  // When fullscreen, render in a fixed position overlay that takes up the entire viewport
+  if (isFullscreen) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 1000,
+          backgroundColor: 'var(--color-surface)',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          <FullscreenMap
+            locations={locations}
+            selectedId={selectedId}
+            onLocationSelect={(id) => setSelectedId(id)}
+            onCollapse={() => setIsFullscreen(false)}
+            defaultCenter={defaultCenter}
+            defaultZoom={zoom || 12}
+          />
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'system-ui' }}>
-      <h2 style={{ marginBottom: '20px' }}>Location Map</h2>
+    <div className="p-5">
+      <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">
+        Pizza Map
+      </h2>
 
       <div
         style={{
           width: '100%',
-          height: '400px',
-          borderRadius: '8px',
-          border: '1px solid var(--ai-color-border-primary, #e0e0e0)',
-          backgroundColor: 'var(--ai-color-bg-secondary, #f0f0f0)',
-          position: 'relative',
-          overflow: 'hidden'
+          height: '478px',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: 'var(--elevation-2-shadow)',
         }}
       >
-        {/* Mock map view */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            textAlign: 'center',
-            color: '#666'
-          }}
-        >
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🗺️</div>
-          <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
-            Map View
-          </div>
-          <div style={{ fontSize: '14px' }}>
-            Center: {data.center.lat.toFixed(4)}, {data.center.lng.toFixed(4)}
-          </div>
-          <div style={{ fontSize: '14px' }}>
-            Zoom: {data.zoom}
-          </div>
-        </div>
-
-        {/* Markers */}
-        {data.markers && data.markers.map((marker: any, index: number) => (
-          <div
-            key={marker.id}
-            style={{
-              position: 'absolute',
-              top: `${30 + index * 15}%`,
-              left: `${20 + index * 20}%`,
-              transform: 'translate(-50%, -50%)'
-            }}
-          >
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50% 50% 50% 0',
-                backgroundColor: '#ef4444',
-                transform: 'rotate(45deg)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <span style={{ transform: 'rotate(-45deg)', fontSize: '16px' }}>📍</span>
-            </div>
-          </div>
-        ))}
+        <Map
+          locations={locations}
+          selectedId={selectedId}
+          onLocationSelect={(id) => setSelectedId(id)}
+          defaultCenter={defaultCenter}
+          defaultZoom={zoom || 12}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={setIsFullscreen}
+          markerVariant="hybrid"
+        />
       </div>
 
-      <div style={{ marginTop: '20px' }}>
-        <h3>Locations ({data.markers?.length || 0})</h3>
-        <ul style={{ margin: 0, paddingLeft: '20px' }}>
-          {data.markers?.map((marker: any) => (
-            <li key={marker.id} style={{ marginBottom: '4px' }}>
-              {marker.title} ({marker.lat.toFixed(4)}, {marker.lng.toFixed(4)})
-            </li>
-          ))}
-        </ul>
-      </div>
+      <p className="mt-4 text-sm text-[var(--color-text-secondary)]">
+        {locations.length} pizza places in San Francisco
+      </p>
     </div>
   );
 }

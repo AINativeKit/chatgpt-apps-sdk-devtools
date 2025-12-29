@@ -231,7 +231,6 @@ export function WidgetPortal({
             loadingDelay={selectedScenario?.delay ?? loadingDelay}
             theme={initialTheme}
             autoLoad={false}
-            toolbarPosition="top"
             key={`${selectedWidgetId}-${selectedScenario?.name || 'none'}`}
           >
             <WidgetComponent />

@@ -114,7 +114,6 @@ export function DevContainer({
   loadingDelay = 2000,
   theme: initialTheme = 'light',
   autoLoad = true,
-  toolbarPosition = 'top',
 }: DevContainerProps) {
   // Normalize to multi-widget structure for consistent handling
   const normalizedWidgets = useMemo((): Widget[] => {
@@ -195,6 +194,19 @@ export function DevContainer({
       localStorage.setItem('devtools.activeWidget', activeWidgetId);
     }
   }, [activeWidgetId, showWidgetSelector]);
+
+  // Reload data when widget changes (if widget has its own data loader)
+  const prevWidgetIdRef = React.useRef(activeWidgetId);
+  useEffect(() => {
+    if (prevWidgetIdRef.current !== activeWidgetId && isInitialized) {
+      prevWidgetIdRef.current = activeWidgetId;
+      const widget = normalizedWidgets.find(w => w.id === activeWidgetId);
+      if (widget?.dataLoader) {
+        // Widget has its own data loader, reload with delay
+        handleDelayedData();
+      }
+    }
+  }, [activeWidgetId, isInitialized, normalizedWidgets]);
 
   // Restore from localStorage
   useEffect(() => {
@@ -287,6 +299,21 @@ export function DevContainer({
     setGlobals({ userAgent: getUserAgent(deviceType) });
   }, [deviceType]);
 
+  // Get the appropriate data loader for current widget
+  const getActiveDataLoader = () => {
+    const widget = normalizedWidgets.find(w => w.id === activeWidgetId);
+    // Prefer widget-specific loader, fall back to global loaders
+    if (widget?.dataLoader) return widget.dataLoader;
+    return normalizedDataLoaders[activeDataLoader];
+  };
+
+  const getActiveEmptyLoader = () => {
+    const widget = normalizedWidgets.find(w => w.id === activeWidgetId);
+    // Prefer widget-specific empty loader, fall back to global loaders
+    if (widget?.emptyDataLoader) return widget.emptyDataLoader;
+    return normalizedEmptyLoaders[activeDataLoader];
+  };
+
   // Data handlers
   const handleInstantData = async () => {
     console.log('📦 Loading data instantly...');
@@ -294,9 +321,9 @@ export function DevContainer({
     setIsLoading(false);
 
     try {
-      const loader = normalizedDataLoaders[activeDataLoader];
+      const loader = getActiveDataLoader();
       if (!loader) {
-        console.warn('⚠️ No data loader found for key:', activeDataLoader);
+        console.warn('⚠️ No data loader found');
         setGlobals({ toolOutput: {} });
       } else {
         const data = await loader();
@@ -321,9 +348,9 @@ export function DevContainer({
 
     // Load the data after delay
     try {
-      const loader = normalizedDataLoaders[activeDataLoader];
+      const loader = getActiveDataLoader();
       if (!loader) {
-        console.warn('⚠️ No data loader found for key:', activeDataLoader);
+        console.warn('⚠️ No data loader found');
         setGlobals({ toolOutput: {} });
       } else {
         const data = await loader();
@@ -345,7 +372,7 @@ export function DevContainer({
     setWidgetState('empty');
     setIsLoading(false);
 
-    const loader = normalizedEmptyLoaders[activeDataLoader];
+    const loader = getActiveEmptyLoader();
     if (!loader) {
       setGlobals({ toolOutput: {} });
     } else {
@@ -395,26 +422,12 @@ export function DevContainer({
       {/* Dev Toolbar */}
       {showDevTools && (
         <div style={{
-          position: 'fixed',
-          [toolbarPosition]: 0,
-          left: 0,
-          right: 0,
           background: 'var(--ai-color-bg-primary)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: toolbarPosition === 'top'
-            ? '1px solid var(--ai-color-border-default)'
-            : 'none',
-          borderTop: toolbarPosition === 'bottom'
-            ? '1px solid var(--ai-color-border-default)'
-            : 'none',
+          borderBottom: '1px solid var(--ai-color-border-default)',
           padding: '12px 16px',
-          zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
           gap: '10px',
-          boxShadow: toolbarPosition === 'top'
-            ? '0 4px 12px var(--ai-color-border-light), 0 1px 3px var(--ai-color-border-default)'
-            : '0 -4px 12px var(--ai-color-border-light), 0 -1px 3px var(--ai-color-border-default)',
         }}>
           {/* Main Controls */}
           <div style={{
@@ -493,8 +506,8 @@ export function DevContainer({
               </div>
             )}
 
-            {/* Data Loader Selector (if multiple) */}
-            {Object.keys(normalizedDataLoaders).length > 1 && (
+            {/* Data Loader Selector (only if multiple global loaders and current widget doesn't have its own) */}
+            {Object.keys(normalizedDataLoaders).length > 1 && !normalizedWidgets.find(w => w.id === activeWidgetId)?.dataLoader && (
               <div style={{ position: 'relative', display: 'inline-block' }}>
                 <select
                   value={activeDataLoader}
@@ -927,17 +940,8 @@ export function DevContainer({
         </div>
       )}
 
-      {/* Main Content Area */}
+      {/* Main Content Area - Viewport Constraint */}
       <div style={{
-        paddingTop: showDevTools && toolbarPosition === 'top'
-          ? showAdvancedSettings ? '120px' : '70px'
-          : '0',
-        paddingBottom: showDevTools && toolbarPosition === 'bottom'
-          ? showAdvancedSettings ? '120px' : '70px'
-          : '0',
-      }}>
-        {/* Viewport Constraint */}
-        <div style={{
           maxWidth: `${viewportWidth}px`,
           margin: '0 auto',
           width: '100%',
@@ -966,7 +970,6 @@ export function DevContainer({
             />
           )}
         </div>
-      </div>
     </div>
   );
 }
