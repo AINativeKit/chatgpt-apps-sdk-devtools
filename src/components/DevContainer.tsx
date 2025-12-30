@@ -145,7 +145,13 @@ export function DevContainer({
   const [showDevTools] = useState(true);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [activeWidgetId, setActiveWidgetId] = useState(defaultWidget || normalizedWidgets[0]?.id || '');
-  const [activeDataLoader, setActiveDataLoader] = useState(defaultDataLoader || Object.keys(normalizedDataLoaders)[0] || '');
+  const [activeDataLoader, setActiveDataLoader] = useState(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('devtools.activeDataLoader') : null;
+    if (saved && Object.keys(normalizedDataLoaders).includes(saved)) {
+      return saved;
+    }
+    return defaultDataLoader || Object.keys(normalizedDataLoaders)[0] || '';
+  });
 
   // Interactive controls state
   const [mockTheme, setMockTheme] = useState<Theme>(initialTheme);
@@ -195,18 +201,30 @@ export function DevContainer({
     }
   }, [activeWidgetId, showWidgetSelector]);
 
-  // Reload data when widget changes (if widget has its own data loader)
+  // Persist activeDataLoader to localStorage
+  useEffect(() => {
+    if (activeDataLoader) {
+      localStorage.setItem('devtools.activeDataLoader', activeDataLoader);
+    }
+  }, [activeDataLoader]);
+
+  // Auto-load data when data loader changes
+  const prevDataLoaderRef = React.useRef(activeDataLoader);
+  useEffect(() => {
+    if (prevDataLoaderRef.current !== activeDataLoader && isInitialized) {
+      prevDataLoaderRef.current = activeDataLoader;
+      handleInstantData();
+    }
+  }, [activeDataLoader, isInitialized]);
+
+  // Auto-load data when widget changes
   const prevWidgetIdRef = React.useRef(activeWidgetId);
   useEffect(() => {
     if (prevWidgetIdRef.current !== activeWidgetId && isInitialized) {
       prevWidgetIdRef.current = activeWidgetId;
-      const widget = normalizedWidgets.find(w => w.id === activeWidgetId);
-      if (widget?.dataLoader) {
-        // Widget has its own data loader, reload with delay
-        handleDelayedData();
-      }
+      handleInstantData();
     }
-  }, [activeWidgetId, isInitialized, normalizedWidgets]);
+  }, [activeWidgetId, isInitialized]);
 
   // Restore from localStorage
   useEffect(() => {
@@ -222,6 +240,7 @@ export function DevContainer({
       setActiveWidgetId(savedWidget);
     }
   }, [showWidgetSelector, normalizedWidgets]);
+
 
   // Sync theme to document
   useEffect(() => {
