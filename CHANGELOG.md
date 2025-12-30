@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-12-30
+
+### Added
+- **Data loader persistence** - Selected data loader (sunny, rainy, etc.) now persists to localStorage
+- **Auto-load on change** - Data automatically loads when switching data loader or widget dropdown (shows loading state first)
+
+### Changed
+- Widget/data loader change now uses delayed loading (shows skeleton) instead of instant load
+
 ## [1.0.0] - 2025-12-29
 
 ### Stable Release
@@ -153,7 +162,8 @@ First stable release of @ainativekit/devtools, aligned with @ainativekit/ui v1.0
 - Architecture principles
 - MIT License
 
-[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.3.0...v1.0.0
 [0.3.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.1.0...v0.2.0

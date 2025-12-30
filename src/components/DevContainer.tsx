@@ -208,21 +208,21 @@ export function DevContainer({
     }
   }, [activeDataLoader]);
 
-  // Auto-load data when data loader changes
+  // Auto-load data when data loader changes (with loading delay)
   const prevDataLoaderRef = React.useRef(activeDataLoader);
   useEffect(() => {
     if (prevDataLoaderRef.current !== activeDataLoader && isInitialized) {
       prevDataLoaderRef.current = activeDataLoader;
-      handleInstantData();
+      handleDelayedData();
     }
   }, [activeDataLoader, isInitialized]);
 
-  // Auto-load data when widget changes
+  // Auto-load data when widget changes (with loading delay)
   const prevWidgetIdRef = React.useRef(activeWidgetId);
   useEffect(() => {
     if (prevWidgetIdRef.current !== activeWidgetId && isInitialized) {
       prevWidgetIdRef.current = activeWidgetId;
-      handleInstantData();
+      handleDelayedData();
     }
   }, [activeWidgetId, isInitialized]);
 
