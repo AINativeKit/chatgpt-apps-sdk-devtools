@@ -292,6 +292,7 @@ export function DevContainer({
       },
       theme: mockTheme,
       toolOutput: null,
+      widgetState: 'loading',
       locale: 'en-US',
       maxHeight: 600,
       userAgent: getUserAgent(deviceType)
@@ -310,6 +311,15 @@ export function DevContainer({
   useEffect(() => {
     setGlobals({ theme: mockTheme });
   }, [mockTheme]);
+
+  // Update widgetState in window.openai
+  useEffect(() => {
+    if ((window as any).openai) {
+      (window as any).openai.widgetState = widgetState;
+      // Dispatch event so widgets can react
+      window.dispatchEvent(new CustomEvent('openai:widgetState', { detail: widgetState }));
+    }
+  }, [widgetState]);
 
   // Update device type
   useEffect(() => {
