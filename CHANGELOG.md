@@ -7,14 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0] - 2025-12-30
+## [1.1.0] - 2026-01-01
 
 ### Added
 - **Data loader persistence** - Selected data loader (sunny, rainy, etc.) now persists to localStorage
 - **Auto-load on change** - Data automatically loads when switching data loader or widget dropdown (shows loading state first)
+- **Widget state exposure** - `window.openai.widgetState` now exposes current state ('loading' | 'data' | 'empty' | 'error') to widgets
+  - Enables widgets to adapt behavior based on dev tool state
+  - Dispatches `openai:widgetState` custom event when state changes
 
 ### Changed
 - Widget/data loader change now uses delayed loading (shows skeleton) instead of instant load
+- **Viewport breakpoints aligned with OpenAI Apps SDK** - Updated to match official breakpoint definitions:
+  - Tablet: 640px → 576px (sm breakpoint)
+  - Mobile: 375px → 380px (xs breakpoint)
+  - Desktop: unchanged at 768px (md breakpoint)
 
 ## [1.0.0] - 2025-12-29
 

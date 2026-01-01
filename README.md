@@ -11,7 +11,7 @@ A powerful, zero-configuration development environment for building ChatGPT apps
 
 - 🎭 **Mock ChatGPT Environment** - Simulates `window.openai` API exactly like production
 - 🎨 **Theme Switching** - Test light and dark themes instantly
-- 📱 **Device Simulation** - Desktop (768px), Tablet (640px), Mobile (375px) viewports
+- 📱 **Device Simulation** - Desktop (768px), Tablet (576px), Mobile (380px) viewports aligned with OpenAI Apps SDK
 - 🔄 **State Testing** - Loading, data, and error states with customizable delays
 - 🐛 **Debug Overlays** - Visual boundary indicators for development
 - 🚀 **Zero Configuration** - Works out of the box with sensible defaults
@@ -234,7 +234,9 @@ window.openai = {
   toolOutput: any,
   locale: string,
   maxHeight: number,
-  userAgent: { device: { type }, capabilities: { hover, touch } }
+  userAgent: { device: { type }, capabilities: { hover, touch } },
+  // DevTools-specific (v1.1.0+)
+  widgetState: 'loading' | 'data' | 'empty' | 'error' // Current dev tool state
 }
 ```
 
