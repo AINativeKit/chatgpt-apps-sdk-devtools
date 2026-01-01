@@ -125,11 +125,13 @@ export type WidgetState = 'loading' | 'data' | 'empty' | 'error';
 
 /**
  * Viewport presets for device simulation
+ * Aligned with OpenAI Apps SDK breakpoints:
+ * xs: 380px, sm: 576px, md: 768px, lg: 1024px, xl: 1280px, 2xl: 1536px
  */
 export const VIEWPORT_PRESETS = {
   desktop: 768,
-  tablet: 640,
-  mobile: 375,
+  tablet: 576,
+  mobile: 380,
 } as const;
 
 /**

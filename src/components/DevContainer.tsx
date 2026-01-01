@@ -323,7 +323,7 @@ export function DevContainer({
 
   // Update device type
   useEffect(() => {
-    const widths = { desktop: 768, tablet: 640, mobile: 375 };
+    const widths = { desktop: 768, tablet: 576, mobile: 380 };
     setViewportWidth(widths[deviceType]);
     setGlobals({ userAgent: getUserAgent(deviceType) });
   }, [deviceType]);
@@ -875,8 +875,8 @@ export function DevContainer({
                     }}
                   >
                     <option value="desktop">💻 Desktop (768px)</option>
-                    <option value="tablet">📱 Tablet (640px)</option>
-                    <option value="mobile">📱 Mobile (375px)</option>
+                    <option value="tablet">📱 Tablet (576px)</option>
+                    <option value="mobile">📱 Mobile (380px)</option>
                   </select>
                   <span style={{
                     position: 'absolute',

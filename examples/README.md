@@ -223,9 +223,9 @@ function FormWidgetExample() {
 - Check contrast and readability in both modes
 
 ### Responsive Testing
-- Desktop: 768px width
-- Tablet: 640px width
-- Mobile: 375px width
+- Desktop: 768px width (OpenAI md breakpoint)
+- Tablet: 576px width (OpenAI sm breakpoint)
+- Mobile: 380px width (OpenAI xs breakpoint)
 - Check layout adjustments at each breakpoint
 
 ## 🐛 Debugging Tips

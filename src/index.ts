@@ -104,10 +104,11 @@ export type {
 
 /**
  * Viewport width presets for device simulation
+ * Aligned with OpenAI Apps SDK breakpoints (xs: 380, sm: 576, md: 768)
  * @constant
- * @property {number} desktop - 768px width
- * @property {number} tablet - 640px width
- * @property {number} mobile - 375px width
+ * @property {number} desktop - 768px width (md breakpoint)
+ * @property {number} tablet - 576px width (sm breakpoint)
+ * @property {number} mobile - 380px width (xs breakpoint)
  */
 export { VIEWPORT_PRESETS } from './types';
 
