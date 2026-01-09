@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-01-09
+
+### Added
+- **ChatGPT-style border** - Container border simulating `widgetPrefersBorder: true`
+  - Responsive border-radius: 24px (desktop), 16px (tablet/mobile)
+  - Toggle in Advanced settings (enabled by default)
+- **Widget-specific multiple data loaders** - New props for widgets with multiple data sources
+  - `dataLoaders: Record<string, Function>` - Multiple named loaders per widget (shows dropdown)
+  - `emptyDataLoaders: Record<string, Function>` - Matching empty state loaders
+  - `defaultDataLoader: string` - Default loader key for the widget
+
+### Fixed
+- **toolResponseMetadata support** - `window.openai.toolResponseMetadata` now populated alongside `toolOutput`
+  - Widgets using `useToolResponseMetadata()` hook now receive data correctly
+
+### Changed
+- Advanced settings panel now open by default
+- Debug toggle replaced with Border toggle
+
 ## [1.1.0] - 2026-01-01
 
 ### Added
@@ -169,7 +188,8 @@ First stable release of @ainativekit/devtools, aligned with @ainativekit/ui v1.0
 - Architecture principles
 - MIT License
 
-[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.3.0...v1.0.0
 [0.3.0]: https://github.com/AINativeKit/chatgpt-apps-sdk-devtools/compare/v0.2.0...v0.3.0

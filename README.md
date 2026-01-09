@@ -196,8 +196,11 @@ function App() {
 | `id` | `string` | Yes | Unique identifier for the widget |
 | `name` | `string` | Yes | Display name for the widget selector |
 | `component` | `React.ComponentType` | Yes | The widget component |
-| `dataLoader` | `() => Promise<any> \| any` | No | Widget-specific data loader |
+| `dataLoader` | `() => Promise<any> \| any` | No | Widget-specific data loader (single, hides dropdown) |
 | `emptyDataLoader` | `() => Promise<any> \| any` | No | Widget-specific empty state data loader |
+| `dataLoaders` | `Record<string, Function>` | No | Multiple named data loaders (v1.2.0+, shows dropdown) |
+| `emptyDataLoaders` | `Record<string, Function>` | No | Matching empty state loaders for dataLoaders |
+| `defaultDataLoader` | `string` | No | Default data loader key for the widget |
 
 #### Common Props
 | Prop | Type | Default | Description |
@@ -232,6 +235,7 @@ window.openai = {
   // Plus all OpenAiGlobals properties
   theme: 'light' | 'dark',
   toolOutput: any,
+  toolResponseMetadata: any, // Server _meta field (v1.2.0+)
   locale: string,
   maxHeight: number,
   userAgent: { device: { type }, capabilities: { hover, touch } },
