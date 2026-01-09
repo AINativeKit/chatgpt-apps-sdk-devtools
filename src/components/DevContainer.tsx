@@ -143,7 +143,7 @@ export function DevContainer({
   const [widgetState, setWidgetState] = useState<'loading' | 'data' | 'error' | 'empty'>('loading');
   const [isLoading, setIsLoading] = useState(false);
   const [showDevTools] = useState(true);
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(true);
   const [activeWidgetId, setActiveWidgetId] = useState(defaultWidget || normalizedWidgets[0]?.id || '');
   const [activeDataLoader, setActiveDataLoader] = useState(() => {
     const saved = typeof window !== 'undefined' ? localStorage.getItem('devtools.activeDataLoader') : null;
@@ -157,7 +157,7 @@ export function DevContainer({
   const [mockTheme, setMockTheme] = useState<Theme>(initialTheme);
   const [deviceType, setDeviceType] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [viewportWidth, setViewportWidth] = useState<number>(768);
-  const [debugMode, setDebugMode] = useState<'none' | 'border'>('none');
+  const [showBorder, setShowBorder] = useState<boolean>(true); // ChatGPT adds border by default (widgetPrefersBorder)
 
   // Show widget selector only if there are multiple widgets
   const showWidgetSelector = normalizedWidgets.length > 1;
@@ -940,36 +940,36 @@ export function DevContainer({
                 </div>
               </div>
 
-              {/* Debug Mode Toggle */}
+              {/* Border Toggle - ChatGPT adds border by default (widgetPrefersBorder) */}
               <button
-                onClick={() => setDebugMode(debugMode === 'none' ? 'border' : 'none')}
-                title="Toggle debug borders"
+                onClick={() => setShowBorder(!showBorder)}
+                title="Toggle ChatGPT-style border"
                 style={{
                   padding: '4px 10px',
                   borderRadius: '6px',
                   border: '1px solid',
-                  borderColor: debugMode === 'border' ? 'var(--ai-color-state-error)' : 'var(--ai-color-border-heavy)',
-                  background: debugMode === 'border' ? 'var(--ai-color-state-error-bg)' : 'var(--ai-color-bg-primary)',
-                  color: debugMode === 'border' ? 'var(--ai-color-state-error)' : 'var(--ai-color-text-secondary)',
+                  borderColor: showBorder ? 'var(--ai-color-state-info)' : 'var(--ai-color-border-heavy)',
+                  background: showBorder ? 'var(--ai-color-state-info-bg)' : 'var(--ai-color-bg-primary)',
+                  color: showBorder ? 'var(--ai-color-state-info)' : 'var(--ai-color-text-secondary)',
                   fontSize: '12px',
                   fontWeight: '500',
                   cursor: 'pointer',
                   transition: 'all 0.15s',
                 }}
                 onMouseEnter={(e) => {
-                  if (debugMode !== 'border') {
-                    e.currentTarget.style.borderColor = 'var(--ai-color-state-error)';
-                    e.currentTarget.style.background = 'var(--ai-color-state-error-bg)';
+                  if (!showBorder) {
+                    e.currentTarget.style.borderColor = 'var(--ai-color-state-info)';
+                    e.currentTarget.style.background = 'var(--ai-color-state-info-bg)';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (debugMode !== 'border') {
+                  if (!showBorder) {
                     e.currentTarget.style.borderColor = 'var(--ai-color-border-heavy)';
                     e.currentTarget.style.background = 'var(--ai-color-bg-primary)';
                   }
                 }}
               >
-                🔍 Debug: {debugMode === 'border' ? 'ON' : 'OFF'}
+                {showBorder ? '🔲 Border' : '⬜ No Border'}
               </button>
 
               {/* Spacer */}
@@ -1023,31 +1023,25 @@ export function DevContainer({
       <div style={{
           maxWidth: `${viewportWidth}px`,
           margin: '0 auto',
+          marginTop: '16px',
           width: '100%',
           position: 'relative',
           overflowX: 'hidden',
         }}>
-          <ErrorBoundary>
-            <AppsSDKUIProvider linkComponent="a">
-              <ActiveComponent />
-            </AppsSDKUIProvider>
-          </ErrorBoundary>
-
-          {/* Debug Border */}
-          {debugMode === 'border' && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                pointerEvents: 'none',
-                border: '2px dashed red',
-                zIndex: 9998,
-              }}
-            />
-          )}
+          {/* ChatGPT-style container with border (widgetPrefersBorder) */}
+          <div style={{
+            ...(showBorder && {
+              border: '1px solid var(--ai-color-border-default)',
+              borderRadius: deviceType === 'desktop' ? '24px' : '16px',
+              overflow: 'hidden',
+            }),
+          }}>
+            <ErrorBoundary>
+              <AppsSDKUIProvider linkComponent="a">
+                <ActiveComponent />
+              </AppsSDKUIProvider>
+            </ErrorBoundary>
+          </div>
         </div>
     </div>
   );
