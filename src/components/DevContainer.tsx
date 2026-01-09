@@ -292,6 +292,7 @@ export function DevContainer({
       },
       theme: mockTheme,
       toolOutput: null,
+      toolResponseMetadata: null,
       widgetState: 'loading',
       locale: 'en-US',
       maxHeight: 600,
@@ -328,19 +329,67 @@ export function DevContainer({
     setGlobals({ userAgent: getUserAgent(deviceType) });
   }, [deviceType]);
 
+  // Get the data loaders available for the current widget
+  const getWidgetDataLoaders = () => {
+    const widget = normalizedWidgets.find(w => w.id === activeWidgetId);
+    // Priority: widget.dataLoaders > widget.dataLoader (single) > global dataLoaders
+    if (widget?.dataLoaders && Object.keys(widget.dataLoaders).length > 0) {
+      return widget.dataLoaders;
+    }
+    if (widget?.dataLoader) {
+      return { default: widget.dataLoader };
+    }
+    return normalizedDataLoaders;
+  };
+
+  // Get the empty loaders available for the current widget
+  const getWidgetEmptyLoaders = () => {
+    const widget = normalizedWidgets.find(w => w.id === activeWidgetId);
+    if (widget?.emptyDataLoaders && Object.keys(widget.emptyDataLoaders).length > 0) {
+      return widget.emptyDataLoaders;
+    }
+    if (widget?.emptyDataLoader) {
+      return { default: widget.emptyDataLoader };
+    }
+    return normalizedEmptyLoaders;
+  };
+
+  // Get default data loader for the current widget
+  const getWidgetDefaultDataLoader = () => {
+    const widget = normalizedWidgets.find(w => w.id === activeWidgetId);
+    const widgetLoaders = getWidgetDataLoaders();
+    if (widget?.defaultDataLoader && widget.defaultDataLoader in widgetLoaders) {
+      return widget.defaultDataLoader;
+    }
+    return Object.keys(widgetLoaders)[0] || '';
+  };
+
+  // Track active data loader per widget - reset when widget changes if loader doesn't exist
+  const widgetDataLoaders = getWidgetDataLoaders();
+  const effectiveActiveDataLoader = activeDataLoader in widgetDataLoaders
+    ? activeDataLoader
+    : getWidgetDefaultDataLoader();
+
+  // Reset activeDataLoader when switching widgets if current loader isn't valid
+  useEffect(() => {
+    const widgetLoaders = getWidgetDataLoaders();
+    if (!(activeDataLoader in widgetLoaders)) {
+      const newDefault = getWidgetDefaultDataLoader();
+      if (newDefault) {
+        setActiveDataLoader(newDefault);
+      }
+    }
+  }, [activeWidgetId]);
+
   // Get the appropriate data loader for current widget
   const getActiveDataLoader = () => {
-    const widget = normalizedWidgets.find(w => w.id === activeWidgetId);
-    // Prefer widget-specific loader, fall back to global loaders
-    if (widget?.dataLoader) return widget.dataLoader;
-    return normalizedDataLoaders[activeDataLoader];
+    const widgetLoaders = getWidgetDataLoaders();
+    return widgetLoaders[effectiveActiveDataLoader];
   };
 
   const getActiveEmptyLoader = () => {
-    const widget = normalizedWidgets.find(w => w.id === activeWidgetId);
-    // Prefer widget-specific empty loader, fall back to global loaders
-    if (widget?.emptyDataLoader) return widget.emptyDataLoader;
-    return normalizedEmptyLoaders[activeDataLoader];
+    const widgetEmptyLoaders = getWidgetEmptyLoaders();
+    return widgetEmptyLoaders[effectiveActiveDataLoader];
   };
 
   // Data handlers
@@ -353,17 +402,18 @@ export function DevContainer({
       const loader = getActiveDataLoader();
       if (!loader) {
         console.warn('⚠️ No data loader found');
-        setGlobals({ toolOutput: {} });
+        setGlobals({ toolOutput: {}, toolResponseMetadata: {} });
       } else {
         const data = await loader();
-        setGlobals({ toolOutput: data });
+        setGlobals({ toolOutput: data, toolResponseMetadata: data });
         console.log('✅ Data loaded:', data);
       }
       setWidgetState('data');
     } catch (error) {
       console.error('❌ Error loading data:', error);
       setWidgetState('error');
-      setGlobals({ toolOutput: { error: error instanceof Error ? error.message : 'Unknown error' } });
+      const errorData = { error: error instanceof Error ? error.message : 'Unknown error' };
+      setGlobals({ toolOutput: errorData, toolResponseMetadata: errorData });
     }
   };
 
@@ -371,7 +421,7 @@ export function DevContainer({
     console.log(`⏳ Loading data with ${loadingDelay}ms delay...`);
     setWidgetState('loading');
     setIsLoading(true);
-    setGlobals({ toolOutput: null });
+    setGlobals({ toolOutput: null, toolResponseMetadata: null });
 
     await new Promise(resolve => setTimeout(resolve, loadingDelay));
 
@@ -380,17 +430,18 @@ export function DevContainer({
       const loader = getActiveDataLoader();
       if (!loader) {
         console.warn('⚠️ No data loader found');
-        setGlobals({ toolOutput: {} });
+        setGlobals({ toolOutput: {}, toolResponseMetadata: {} });
       } else {
         const data = await loader();
-        setGlobals({ toolOutput: data });
+        setGlobals({ toolOutput: data, toolResponseMetadata: data });
         console.log('✅ Data loaded:', data);
       }
       setWidgetState('data');
     } catch (error) {
       console.error('❌ Error loading data:', error);
       setWidgetState('error');
-      setGlobals({ toolOutput: { error: error instanceof Error ? error.message : 'Unknown error' } });
+      const errorData = { error: error instanceof Error ? error.message : 'Unknown error' };
+      setGlobals({ toolOutput: errorData, toolResponseMetadata: errorData });
     }
 
     setIsLoading(false);
@@ -403,15 +454,15 @@ export function DevContainer({
 
     const loader = getActiveEmptyLoader();
     if (!loader) {
-      setGlobals({ toolOutput: {} });
+      setGlobals({ toolOutput: {}, toolResponseMetadata: {} });
     } else {
       try {
         const emptyData = await loader();
-        setGlobals({ toolOutput: emptyData });
+        setGlobals({ toolOutput: emptyData, toolResponseMetadata: emptyData });
         console.log('✅ Empty state loaded:', emptyData);
       } catch (error) {
         console.error('❌ Error loading empty state:', error);
-        setGlobals({ toolOutput: {} });
+        setGlobals({ toolOutput: {}, toolResponseMetadata: {} });
       }
     }
   };
@@ -420,19 +471,18 @@ export function DevContainer({
     console.log('❌ Showing error state...');
     setWidgetState('error');
     setIsLoading(false);
-    setGlobals({
-      toolOutput: {
-        error: 'Something went wrong',
-        message: 'This is a simulated error for testing error states'
-      }
-    });
+    const errorData = {
+      error: 'Something went wrong',
+      message: 'This is a simulated error for testing error states'
+    };
+    setGlobals({ toolOutput: errorData, toolResponseMetadata: errorData });
   };
 
   const handleShowLoading = () => {
     console.log('⏳ Showing loading state...');
     setWidgetState('loading');
     setIsLoading(false);
-    setGlobals({ toolOutput: null });
+    setGlobals({ toolOutput: null, toolResponseMetadata: null });
   };
 
   if (!isInitialized) {
@@ -535,11 +585,11 @@ export function DevContainer({
               </div>
             )}
 
-            {/* Data Loader Selector (only if multiple global loaders and current widget doesn't have its own) */}
-            {Object.keys(normalizedDataLoaders).length > 1 && !normalizedWidgets.find(w => w.id === activeWidgetId)?.dataLoader && (
+            {/* Data Loader Selector (shown if widget has multiple data loaders) */}
+            {Object.keys(widgetDataLoaders).length > 1 && (
               <div style={{ position: 'relative', display: 'inline-block' }}>
                 <select
-                  value={activeDataLoader}
+                  value={effectiveActiveDataLoader}
                   onChange={(e) => setActiveDataLoader(e.target.value)}
                   title="Select data source"
                   style={{
@@ -568,7 +618,7 @@ export function DevContainer({
                     e.target.style.boxShadow = 'none';
                   }}
                 >
-                  {Object.keys(normalizedDataLoaders).map(key => (
+                  {Object.keys(widgetDataLoaders).map(key => (
                     <option key={key} value={key}>
                       📊 {key}
                     </option>

@@ -14,10 +14,24 @@ export interface Widget {
   name: string;
   /** The widget component */
   component: React.ComponentType;
-  /** Widget-specific data loader (optional) */
+  /** Widget-specific data loader (optional) - single loader, hides dropdown */
   dataLoader?: () => Promise<any> | any;
   /** Widget-specific empty data loader (optional) */
   emptyDataLoader?: () => Promise<any> | any;
+  /**
+   * Widget-specific data loaders (optional) - multiple loaders with dropdown
+   * When provided, only these data sources appear in the dropdown for this widget
+   */
+  dataLoaders?: Record<string, () => Promise<any> | any>;
+  /**
+   * Widget-specific empty data loaders (optional)
+   * Should match keys in dataLoaders
+   */
+  emptyDataLoaders?: Record<string, () => Promise<any> | any>;
+  /**
+   * Default data loader key for this widget
+   */
+  defaultDataLoader?: string;
 }
 
 /**
